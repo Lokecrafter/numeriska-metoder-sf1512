@@ -2,8 +2,8 @@ close all, clear all, clc;
 
 global data_t_days;
 global data_sun_time_minutes;
-data_t_days = [1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 366]';
-data_sun_time_minutes = [377, 485, 632, 794, 957, 1083, 1105, 997, 847, 683, 526, 395, 374]';
+data_t_days = [1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 366];
+data_sun_time_minutes = [377, 485, 632, 794, 957, 1083, 1105, 997, 847, 683, 526, 395, 374];
 fine_t_days = linspace(min(data_t_days), max(data_t_days), 100);
 
 saved_interpolations_matrix = [];
@@ -17,7 +17,7 @@ function ret = plot_discrete_data(title_msg)
     title(title_msg);
     xlim([min(data_t_days), max(data_t_days)]);
     ylim([0, 1200]);
-    
+
     hold on;
 end
 
@@ -73,12 +73,23 @@ plot_discrete_data("2-deg polynomial interpolation (Januari-(31th December))");
 plot(fine_t_days, interpolation);
 
 
+%Trigonometric interpolation
+subplot(3, 3, 7);
+period = 2 * pi / 365;
+A = [ones(size(data_t_days')), cos(period * data_t_days'), sin(period * data_t_days')];
+coefficients = (A'*A)\(A'*data_sun_time_minutes');
 
+trig_func = @(x) coefficients(1) + coefficients(2) * cos(period * x) + coefficients(3) * sin(period * x);
 
-%Januari-(31th December) polynomial
-subplot(3, 3, 6);
-[p,~,centering] = polyfit(data_t_days, data_sun_time_minutes, 2);
-interpolation = polyval(p, fine_t_days,[],centering);
+interpolation = trig_func(fine_t_days);
 saved_interpolations_matrix = [saved_interpolations_matrix ; interpolation];
-plot_discrete_data("2-deg polynomial interpolation (Januari-(31th December))");
+plot_discrete_data("Trigonometric interpolation");
 plot(fine_t_days, interpolation);
+
+
+
+%All interpolations
+subplot(3, 3, 9);
+plot_discrete_data("All interpolations");
+plot(fine_t_days, saved_interpolations_matrix);
+legend(["data", "1", "2", "3", "4", "5", "6", "7"]);
