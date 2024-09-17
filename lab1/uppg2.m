@@ -16,51 +16,60 @@ f_prim = @(x) (21*(x.^2 + x + 0.05).^7) ./ (3*x + 1).^8 - (7*(2*x + 1).*(x.^2 + 
 
 %c
 function root = find_root_newton(x_0)
+    %Import mathematical functions
     global f;
     global f_prim;
 
-    x_prev = x_0;
+    x_root = x_0;
     error_prev = 1;
-    for i = 1:100
-        x_delta = f(x_prev) / f_prim(x_prev);
-        error = x_delta;
 
-        K = error / (error_prev^2)
-        if error <= 10^(-8)
-            i
+    for i = 1:100
+        x_delta = f(x_root) / f_prim(x_root);
+        
+        %Error and convergence testing
+        error = abs(x_delta);
+        x_root = x_root - x_delta;
+        relative_error = error / x_root;
+
+        K = error / (error_prev^2);
+        error_prev = error;
+        disp(["K: ", K]);
+
+        %Exit condition
+        if relative_error <= 10^(-8)
+            disp(["i: ", i]);
             break;
         end
-
-        x_prev = x_prev - x_delta;
-
-        error_prev = error;
     end
-    root = x_prev;
+    root = [x_root, relative_error];
 end
 
 
 
-
+%B plotting function--------------------------------------------------------------------------------------------
 x = linspace(-1, 8, 500);
 
 %Plot function
 subplot(2, 2, 1)
 plot(x, f(x));
+title("f(x)");
+grid on;
 ylim([-500, 500]);
 hold on;
-
 %Plot zero reference line
 plot(x, zeros(length(x)));
 hold on;
 
-%Find roots
-roots = [find_root_newton(0), find_root_newton(7)];
+%C Find roots and plot them-----------------------------------------------------------------------------------------
+roots = [find_root_newton(0); find_root_newton(7)];
 plot(roots, f(roots), "o");
 
 %Plot first root
 subplot(2, 2, 2)
 x = linspace(roots(1)-0.1, roots(1)+0.1, 500);
 plot(x, f(x));
+title("First root");
+grid on;
 hold on;
 plot(roots(1), f(roots(1)), "o");
 hold on;
@@ -72,6 +81,8 @@ hold on;
 subplot(2, 2, 3)
 x = linspace(roots(2)-0.1, roots(2)+0.1, 500);
 plot(x, f(x));
+title("Second root");
+grid on;
 hold on;
 plot(roots(2), f(roots(2)), "o");
 hold on;
@@ -79,33 +90,26 @@ hold on;
 plot(x, zeros(length(x)));
 hold on;
 
+disp("The roots are:")
+disp(["Root 1: ",roots(1), "   Root 2: ", roots(2)])
 
-%D
+%D Definition of convergence--------------------------------------------------------------------------------------------
 %Kvadratisk konvergens definition: lim då (n -> inf); abs(error) / (abs(prev_error)^2) = K
 
 
 %E
 %Bestäm konvergenskonstanten.
-K = 0;
-x_prev = roots(2
-);
-error_prev = 1;
-for i = 1:100
-    x_delta = f(x_prev) / f_prim(x_prev);
-    error = x_delta;
 
-    K = error / (error_prev^2)
-    if error <= 10^(-8)
-        i
-        break;
-    end
+x_root = roots(2);
 
-    x_prev = x_prev - x_delta;
-
-    error_prev = error;
-end
-root = x_prev;
+x_delta = f(x_root) / f_prim(x_root);
+error1 = abs(x_delta);
+error2 = abs(f(x_root - x_delta) / f_prim(x_root - x_delta))
+K = error2 / (error1^2);
 
 K
 
-%1.3213e-12
+
+%F och G. Visa rötter och att konvergens var OK. Konvergens ser man i att K-värdet hålls ungefär samma mellan iterationerna.
+disp("Root:                 Relative error:");
+disp(roots);
