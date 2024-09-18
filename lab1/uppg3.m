@@ -31,13 +31,13 @@ function root = find_root_secant(x_0, x_1)
 
         relative_error = error / x;
 
-        K = error / (error_prev^2);
+        K = error / (error_prev^((1+sqrt(5))/2));
         error_prev = error;
-        disp(["K: ", K]);
+        disp(["X:", x, "   K:" , K,]);
 
         %Exit condition
         if relative_error <= 10^(-8)
-            disp(["i: ", i]);
+            disp(["iterations: ", i]);
             break;
         end
     end
@@ -68,7 +68,7 @@ plot(roots, f(roots), "o");
 subplot(2, 2, 2)
 x = linspace(roots(1)-0.1, roots(1)+0.1, 500);
 plot(x, f(x));
-title("First root");
+title(["First root   ", roots(1)]);
 grid on;
 hold on;
 plot(roots(1), f(roots(1)), "o");
@@ -81,7 +81,7 @@ hold on;
 subplot(2, 2, 3)
 x = linspace(roots(2)-0.1, roots(2)+0.1, 500);
 plot(x, f(x));
-title("Second root");
+title(["Second root   ", roots(2)]);
 grid on;
 hold on;
 plot(roots(2), f(roots(2)), "o");

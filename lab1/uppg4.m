@@ -2,9 +2,9 @@ close all, clear all, clc;
 
 global data_t_days;
 global data_sun_time_minutes;
-data_t_days = [1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 366];
+data_t_days = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365];
 data_sun_time_minutes = [377, 485, 632, 794, 957, 1083, 1105, 997, 847, 683, 526, 395, 374];
-fine_t_days = linspace(min(data_t_days), max(data_t_days), 100);
+fine_t_days = linspace(min(data_t_days), max(data_t_days), 365);
 
 saved_interpolations_matrix = [];
 

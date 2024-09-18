@@ -7,8 +7,10 @@ close all, clear all, clc;
 %Största rot
 %Tar bort tal flera gånger så får man roten:
 %7.37
+
 global f;
 global f_prim;
+global K;
 
 %b
 f = @(x) 73 * x - ((x.^2 + x + 0.05) ./ (3 * x + 1)).^7 - 11 * x .* exp(-x);
@@ -19,6 +21,7 @@ function root = find_root_newton(x_0)
     %Import mathematical functions
     global f;
     global f_prim;
+    global K;
 
     x_root = x_0;
     error_prev = 1;
@@ -33,11 +36,11 @@ function root = find_root_newton(x_0)
 
         K = error / (error_prev^2);
         error_prev = error;
-        disp(["K: ", K]);
+        disp(["X:", x_root, "   K:" , K,]);
 
         %Exit condition
         if relative_error <= 10^(-8)
-            disp(["i: ", i]);
+            disp(["iterations: ", i]);
             break;
         end
     end
@@ -66,9 +69,9 @@ plot(roots, f(roots), "o");
 
 %Plot first root
 subplot(2, 2, 2)
-x = linspace(roots(1)-0.1, roots(1)+0.1, 500);
+x = linspace(roots(1)-0.01, roots(1)+0.01, 500);
 plot(x, f(x));
-title("First root");
+title(["First root   ", roots(1)]);
 grid on;
 hold on;
 plot(roots(1), f(roots(1)), "o");
@@ -81,7 +84,7 @@ hold on;
 subplot(2, 2, 3)
 x = linspace(roots(2)-0.1, roots(2)+0.1, 500);
 plot(x, f(x));
-title("Second root");
+title(["Second root   ", roots(2)]);
 grid on;
 hold on;
 plot(roots(2), f(roots(2)), "o");
@@ -100,12 +103,12 @@ disp(["Root 1: ",roots(1), "   Root 2: ", roots(2)])
 %E
 %Bestäm konvergenskonstanten.
 
-x_root = roots(2);
+%x_root = roots(2);
 
-x_delta = f(x_root) / f_prim(x_root);
-error1 = abs(x_delta);
-error2 = abs(f(x_root - x_delta) / f_prim(x_root - x_delta))
-K = error2 / (error1^2);
+%x_delta = f(x_root) / f_prim(x_root);
+%error1 = abs(x_delta);
+%error2 = abs(f(x_root - x_delta) / f_prim(x_root - x_delta));
+%K = error2 / (error1^2);
 
 K
 
