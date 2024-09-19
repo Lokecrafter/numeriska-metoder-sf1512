@@ -38,8 +38,8 @@ function ret = f(x_values)
 
     for i = 1:length(x_values)
         x = x_values(i);
-        if and(-0.1 < x, x < 0.1)
-            ret(i) = base_function(-0.1) + (base_function(0.1) - base_function(-0.1)) * (x+0.1);
+        if and(-0.01 < x, x < 0.01)
+            ret(i) = base_function(-0.01) + (base_function(0.01) - base_function(-0.01)) * (x+0.01);
         else
             ret(i) = base_function(x);
         end
@@ -47,13 +47,30 @@ function ret = f(x_values)
 end
 
 a= 0; 
-b= 22361; 
-trapz_interations = 2;
+b= 35356; 
+trapz_per_interval = 10;
+trapz_iterations = 12;
 
-intervals = [0, 15; 15, 200; 200, b]';
+intervals = [5000, b; 200, 5000; 15, 200; a, 15]'; %Ombytt för 
 
-result = own_trapz(@f, intervals, 10, trapz_interations);
-err = abs(result(end) - result(end - 1));
+richard = own_trapz(@f, intervals, trapz_per_interval, trapz_iterations);
+
+tail_cut_err = 10^(-10);
+begin_approx_err = 1.1 * 10^(-11);
+err = begin_approx_err + tail_cut_err + abs(richard(2:end) - richard(1:(end - 1)));
+%Felet från approximationen i det "svajiga" området för gränsvärdet då x går mot 0 blir exakt 1.1e-11 vilket säger att vår approximation är tillräckligt bra för att inte påverka resultatet.
+
+
+disp(richard);
+disp("Error: ");
+disp(err);
+richard = richardson_extrapolation(richard(1:(end - 1)), richard(2:end));
+disp("Richardson extrapolation: ")
+disp(richard);
+disp(["Result: ", richard(end), " +/- ", err(end)]);
+
+
+
 
 xx = linspace(0, 10, 100);
 plot(xx, f(xx), "o-");
@@ -62,8 +79,3 @@ xlim([-1, 20]);
 
 hold on;
 plot(xx, zeros(size(xx)));
-
-disp(result);
-disp(["Error: ", err]);
-disp("Richardson näst sista: ")
-disp(richardson_extrapolation(result(1:(end - 1)), result(2:end)));
