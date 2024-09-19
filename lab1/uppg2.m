@@ -38,6 +38,11 @@ function root = find_root_newton(x_0)
         error_prev = error;
         disp(["X:", x_root, "   K:" , K,]);
 
+        %Force to do 4 iterations
+        if i <= 4
+            continue;
+        end
+
         %Exit condition
         if relative_error <= 10^(-8)
             disp(["iterations: ", i]);
