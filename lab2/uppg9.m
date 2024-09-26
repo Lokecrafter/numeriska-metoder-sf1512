@@ -1,3 +1,5 @@
+close all, clear all, clc;
+
 f = @(y,x) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
 
 
