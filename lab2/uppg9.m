@@ -14,15 +14,14 @@ function ret = do_euler(f, start_x, start_y, step_size, end_x, tolerance)
 
         disp(["Number of steps: ", length(x)]);
 
-        for n = 1:length(x)
-            y(n+1) = y(n) + step_size * f(y(n), x(n)); % Beräknar nästa y-värde med 
+        for n = 1:length(y)
+            y(n+1) = y(n) + step_size * f(y(n), x(n));
         end
 
+        ret = y;
         
         
         error = abs(prev_end_y - y(end));
-        ret = y;
-
 
         %Exit condition
         if error < tolerance
