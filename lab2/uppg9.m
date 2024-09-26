@@ -97,7 +97,61 @@ disp(['Trapz integral (rotational volume) value: ', num2str(volume)])
 
 %-----------------------------------------------
 
-% DELUPPGIFT D
+% DELUPPGIFTER C, D
 
 %-----------------------------------------------
 
+
+function ret = V(L, y_values);
+    
+    L_index = length(y_values) * L / 6; % 6 based on the fact that we calculated the whole volume based on x = L = 6. Rounded down w floor.
+    step_size = 6/(length(y_values)-1); % Interval of x [0,6] divided by the length of 'y_values's (i.e number of steps)
+    ret = pi * step_size * (sum(y_values(1:L_index)) - (y_values(1) + y_values(L_index)) * 0.5);
+
+end
+
+disp(['Separate function: Trapz integral (rotational volume) value: ', num2str(V(6, integrand))])
+
+global g;
+global g_prim;
+global K;
+g =@(x) V(x, integrand) - 0.65 * volume;
+g_prim =@(x) integrand(floor(length(integrand) * x / 6)); 
+
+function root = find_root_newton(x_0)
+    %Import mathematical functions
+    global g;
+    global g_prim;
+    global K;
+
+    x_root = x_0;
+    error_prev = 1;
+
+    for i = 1:100
+        x_delta = g(x_root) / g_prim(x_root);
+        
+        % Error and convergence testing
+        error = abs(x_delta);
+        x_root = x_root - x_delta;
+        relative_error = error / x_root;
+
+        K = error / (error_prev^2);
+        error_prev = error;
+        disp(["X:", x_root, "   K:" , K,]);
+
+        % Force to do 4 iterations
+        if i <= 4
+            continue;
+        end
+
+        % Exit condition
+        if relative_error <= 10^(-8)
+            disp(["iterations: ", i]);
+            break;
+        end
+    end
+    root = [x_root, relative_error];
+end
+
+L_volume_65 = find_root_newton(3);
+disp(L_volume_65)
