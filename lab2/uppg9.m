@@ -1,12 +1,15 @@
-<<<<<<< Updated upstream
-close all, clear all, clc;
-
-=======
 % Uppgift 9 - Numerisk integration: Rotationssymmetrisk lur
 
+close all; clear all; clc;
+
+%-----------------------------------------------
+
+% DELUPPGIFT A
+
+%-----------------------------------------------
 
 % Defining function f = y prim
->>>>>>> Stashed changes
+% ------------------------------------------------
 f = @(y,x) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
 
 
@@ -69,9 +72,20 @@ ylabel('y');
 grid on;
 title('Eulers metod')
 
-% Integral
+% Integral/volume
 % ------------------------------------------------
 
 integrand = result.*result;
+% trapz_integral = step_size * (sum(result) - (result(1) + result(length(result))) * 0.5);
+% disp(['Trapz integral value: ', num2str(trapz_integral)]);
+% Area looked as to be about 3/10 of the plot-square (2.5*6) which gives an area of 4.5. 
+% Only calculating the area of the integral with Trapz's method gives the value 4.5647; we trust this value.
 volume = pi * step_size * (sum(integrand) - (integrand(1) + integrand(length(integrand))) * 0.5);
-disp(['Trapz integral value: ', num2str(volume)])
+disp(['Trapz integral (volume) value: ', num2str(volume)])
+
+%-----------------------------------------------
+
+% DELUPPGIFT B
+
+%-----------------------------------------------
+
