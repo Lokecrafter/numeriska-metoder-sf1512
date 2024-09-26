@@ -1,4 +1,4 @@
-% Upg 8 - Numerisk integration: Eulers metod
+% Uppgift 8 - Numerisk integration: Eulers metod
 
 
 
