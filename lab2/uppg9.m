@@ -79,17 +79,18 @@ xlabel('x');
 ylabel('y');
 grid on;
 title('Eulers metod')
+hold on;
 
 
 
 % Integral/volume
 % ------------------------------------------------
 
-integrand = result.*result;
 trapz_integral = step_size * (sum(result) - (result(1) + result(length(result))) * 0.5);
 disp(['Trapz integral (area) value: ', num2str(trapz_integral)]);
 % Area looked as to be about 3/10 of the plot-square (2.5*6) which gives an area of 4.5. 
 % Only calculating the area of the integral with Trapz's method gives the value 4.5647; we trust this value.
+integrand = result.*result;
 volume = pi * step_size * (sum(integrand) - (integrand(1) + integrand(length(integrand))) * 0.5);
 disp(['Trapz integral (rotational volume) value: ', num2str(volume)])
 
@@ -102,7 +103,9 @@ disp(['Trapz integral (rotational volume) value: ', num2str(volume)])
 %-----------------------------------------------
 
 
-function ret = V(L, y_values);
+function ret = V(L, y_values)
+    L = min(max(L, 0), 6);
+
     xx = linspace(0, L, length(y_values));
     interpolation = interp1(linspace(0, 6, length(y_values)), y_values, xx);
 
@@ -113,47 +116,37 @@ end
 
 disp(['Separate function: Trapz integral (rotational volume) value: ', num2str(V(6, integrand))])
 
-global g;
-global g_prim;
-global K;
+
 g =@(x) V(x, integrand) - 0.65 * volume;
-g_prim =@(x) interp1(linspace(0, 6, length(integrand)), pi * integrand, x / 6); 
 
-function root = find_root_newton(x_0)
+function root = find_root_secant(f, x_0, x_1)
     %Import mathematical functions
-    global g;
-    global g_prim;
-    global K;
-
-    x_root = x_0;
+    x_prev = x_0;
+    x = x_1;
     error_prev = 1;
 
     for i = 1:100
-        x_delta = g(x_root) / g_prim(x_root);
-        disp(["g(x): ", g(x_root), "           g_prim(x): ", g_prim(x_root), "    x_root: ", x_root])
-        % Error and convergence testing
+        x_delta = f(x)*((x-x_prev)/(f(x)-f(x_prev)));
+        
+        %Error and convergence testing
         error = abs(x_delta);
-        x_root = x_root - x_delta;
-        relative_error = error / x_root;
+        x_prev = x;
+        x = x - x_delta;
 
-        K = error / (error_prev^2);
+        relative_error = error / x;
+
+        K = error / (error_prev^((1+sqrt(5))/2));
         error_prev = error;
-        disp(["X:", x_root, "   K:" , K, "     x_delta", x_delta]);
+        disp(["X:", x, "   K:" , K,]);
 
-        % Force to do 4 iterations
-        if i <= 4
-            continue;
-        end
-
-        % Exit condition
+        %Exit condition
         if relative_error <= 10^(-8)
             disp(["iterations: ", i]);
             break;
         end
     end
-    root = [x_root, relative_error];
+    root = [x, relative_error];
 end
 
-L_volume_65 = find_root_newton(3);
+L_volume_65 = find_root_secant(g, 3, 5);
 disp(L_volume_65)
-disp(g_prim(1))
