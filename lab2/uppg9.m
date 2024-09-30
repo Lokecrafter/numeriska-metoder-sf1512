@@ -103,10 +103,11 @@ disp(['Trapz integral (rotational volume) value: ', num2str(volume)])
 
 
 function ret = V(L, y_values);
-    
-    L_index = length(y_values) * L / 6; % 6 based on the fact that we calculated the whole volume based on x = L = 6. Rounded down w floor.
+    xx = linspace(0, L, length(y_values));
+    interpolation = interp1(linspace(0, 6, length(y_values)), y_values, xx);
+
     step_size = 6/(length(y_values)-1); % Interval of x [0,6] divided by the length of 'y_values's (i.e number of steps)
-    ret = pi * step_size * (sum(y_values(1:L_index)) - (y_values(1) + y_values(L_index)) * 0.5);
+    ret = pi .* step_size .* (sum(interpolation(1:length(y_values))) - (interpolation(1) + interpolation(length(y_values))) .* 0.5);
 
 end
 
@@ -116,7 +117,7 @@ global g;
 global g_prim;
 global K;
 g =@(x) V(x, integrand) - 0.65 * volume;
-g_prim =@(x) integrand(floor(length(integrand) * x / 6)); 
+g_prim =@(x) interp1(linspace(0, 6, length(integrand)), pi * integrand, x / 6); 
 
 function root = find_root_newton(x_0)
     %Import mathematical functions
@@ -129,7 +130,7 @@ function root = find_root_newton(x_0)
 
     for i = 1:100
         x_delta = g(x_root) / g_prim(x_root);
-        
+        disp(["g(x): ", g(x_root), "           g_prim(x): ", g_prim(x_root), "    x_root: ", x_root])
         % Error and convergence testing
         error = abs(x_delta);
         x_root = x_root - x_delta;
@@ -137,7 +138,7 @@ function root = find_root_newton(x_0)
 
         K = error / (error_prev^2);
         error_prev = error;
-        disp(["X:", x_root, "   K:" , K,]);
+        disp(["X:", x_root, "   K:" , K, "     x_delta", x_delta]);
 
         % Force to do 4 iterations
         if i <= 4
@@ -155,3 +156,4 @@ end
 
 L_volume_65 = find_root_newton(3);
 disp(L_volume_65)
+disp(g_prim(1))
