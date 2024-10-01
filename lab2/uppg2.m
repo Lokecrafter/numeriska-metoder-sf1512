@@ -6,7 +6,7 @@
 
 %-----------------------------------------------
 
-clear all; close all; clc;
+clear all; close all; clc; clf;
 
 L = 3.40; % [m]
 T0 = 300; % [K]
@@ -58,7 +58,7 @@ for i = 1:10
     
         b(row) = - Q(x(row + 1));
     end
-
+    
     % disp('Matrix A: ')
     % disp(A)
 
