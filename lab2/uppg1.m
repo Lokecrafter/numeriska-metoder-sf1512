@@ -30,9 +30,9 @@ clear all; clc; clf;
 %fi' = fi' + h fi''
 
 T = 12;
-% L = 2.35;
+L = 2.35;
 % Adjusted for Deluppgift e
-L = 2.5;
+%L = 2.5;
 G = 9.82;
 h = 0.1;
 
