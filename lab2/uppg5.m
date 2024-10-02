@@ -34,7 +34,7 @@ function root = find_root_secant(f, x_0, x_1, tolerance)
     x = x_1;
     error_prev = 1;
 
-    disp("     x       K       relative_error")
+    disp("     x                K                   Relative_error")
 
     for i = 1:100
         x_delta = f(x)*((x-x_prev)/(f(x)-f(x_prev)));
@@ -44,7 +44,7 @@ function root = find_root_secant(f, x_0, x_1, tolerance)
         x_prev = x;
         x = x - x_delta;
 
-        relative_error = error / x;
+        relative_error = error / abs(x);
 
         K = error / (error_prev^((1+sqrt(5))/2));
         error_prev = error;
@@ -53,7 +53,7 @@ function root = find_root_secant(f, x_0, x_1, tolerance)
         %Exit condition
         if relative_error < tolerance
             if i > 2
-                disp(["Iterations i: " + i]);
+                disp("Iterations i: " + i);
                 break;
             end
         end
