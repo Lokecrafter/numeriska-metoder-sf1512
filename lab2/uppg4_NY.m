@@ -32,13 +32,13 @@ function ret = get_jacobian(X, Y, R);
 end
 
 % plot circle funct.
-function ret = plot_cirlce(origin, radius);
+function ret = plot_cirlce(origin, radius, plot_settings);
     tt = linspace(0, 2 * pi, 100);
 
     xx = origin(1) + cos(tt) * radius;
     yy = origin(2) + sin(tt) * radius;
 
-    plot(xx, yy, "-r");
+    plot(xx, yy, "-" + plot_settings);
     hold on;
     plot(origin(1), origin(2), "or");
 end
@@ -47,7 +47,7 @@ end
 plot(points(1,:), points(2,:), "o");
 hold on;
 
-start_guess_NR = [0,0,1]';
+start_guess_NR = [0,0,8]';
 
 % Right side of equation f(X,Y,R) = 
 function ret = get_function_values(X, Y, R);
@@ -76,7 +76,7 @@ prev_guess = 0;
 for i = 1:20
     curr_X = current_guess(1);
     curr_Y = current_guess(2);
-    curr_R = current_guess(3);
+    curr_R = abs(current_guess(3));
 
     jacobian_matrix = get_jacobian(curr_X, curr_Y, curr_R);
     function_values = get_function_values(curr_X, curr_Y, curr_R);
@@ -111,7 +111,7 @@ circle_radius = current_guess(3);
 
 
 % square aspect for circle plot
-plot_cirlce(circle_origin, circle_radius)
+plot_cirlce(circle_origin, circle_radius, "r")
 pbaspect([1 1 1]) %Sets square aspect ratio
 
 
@@ -128,10 +128,12 @@ b = (points(1,:).^2 + points(2,:).^2)';
 
 c = A\b;
 
-X = 2 * c(2);
-Y = 2 * c(3);
-R = sqrt(c(1) + 4 * c(2) + 4 * c(3));
+X = 0.5 * c(2);
+Y = 0.5 * c(3);
+R = sqrt(c(1) + 0.25 * c(2) * c(2) + 0.25 * c(3) * c(3));
 
 
 hold on;
-plot_cirlce([X,Y], R);
+plot_cirlce([X,Y], R, "g");
+
+
