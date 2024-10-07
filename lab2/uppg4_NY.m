@@ -78,7 +78,7 @@ for i = 1:10
     curr_R = current_guess(3);
 
     jacobian_matrix = get_jacobian(curr_X, curr_Y, curr_R);
-    function_values = - get_function_values(curr_X, curr_Y, curr_R);
+    function_values = get_function_values(curr_X, curr_Y, curr_R);
 
     t = jacobian_matrix\function_values;
 
@@ -86,6 +86,9 @@ for i = 1:10
 
     E_trunk = abs(current_guess - prev_guess);
 
+
+
+    disp("X: " + current_guess(1) + "    Y: " + current_guess(2) + "    R: " + current_guess(3) + "    E_trunk: " + E_trunk);
     % exit cond.
     if max(E_trunk) < tolerance % max value of error vector
         if i >=2
