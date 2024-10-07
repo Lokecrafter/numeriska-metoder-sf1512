@@ -56,7 +56,7 @@ y(1)=y_0; % Vi ger första värdet för y-vektorn
 
 % 3. Eulers metod (iterationsloop):
 %----------------------------------
-for n = 1:length(x) - 1 % Längden av x fast vi vill inte göra en 
+for n = 1:length(x) - 2 % Längden av x fast vi vill inte göra en 
     % gång för många så det blir length(x)-1. n är vår loop-variabel.
     y(n+1) = y(n) + h * f(y(n), x(n)); % Beräknar nästa y-värde med 
     % Eulers metod! So simple! <3 :D

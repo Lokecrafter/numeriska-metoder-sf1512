@@ -10,7 +10,7 @@ close all; clear all; clc;
 
 % Defining function f = y prim
 % ------------------------------------------------
-f = @(y,x) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
+f = @(x,y) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
 
 
 
@@ -20,6 +20,8 @@ f = @(y,x) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
 function ret = do_euler(f, start_x, start_y, step_size, end_x, tolerance)
 
     prev_end_y = 0;
+    y = [];
+
 
     for i = 1:10
         x = start_x:step_size:end_x;
@@ -28,29 +30,31 @@ function ret = do_euler(f, start_x, start_y, step_size, end_x, tolerance)
 
         % disp(["Number of steps: ", length(x)]); % Control
 
-        for n = 1:length(y)
-            y(n+1) = y(n) + step_size * f(y(n), x(n));
+        
+        for n = 1:length(x) - 2 % Längden av x fast vi vill inte göra en 
+            % gång för många så det blir length(x)-1. n är vår loop-variabel.
+            y(n+1) = y(n) + step_size * f(x(n), y(n)); % Beräknar nästa y-värde med 
+            % Eulers metod! So simple! <3 :D
         end
-
-        ret = y;
         
         error = abs(prev_end_y - y(end));
-
+        
         if(i == 1)
             disp('    x         y       step_size   error')
         end
         disp([x(end), y(end), step_size, error])
-
+        
         % Exit condition based on tolerance
         if error < tolerance
             if(i ~= 1)
                 break;
             end
         end
-
+        
         prev_end_y = y(end);
         step_size = step_size * 0.5; % 0.5 = 1/2. Multiplication is faster than division.
     end
+    ret = y;
 end
 
 
@@ -59,6 +63,8 @@ end
 % ------------------------------------------------
 
 result = do_euler(f, 0, 2.5, 0.5, 6, 10^(-6)); % Making the tolerance even smaller makes the error smaller which in 
+
+%result = ode45(f, [0,6], 2.5).x;
 % turn prevents further error propagation throughout the rest of the methods below. 
 % Thus making us trust at-least four (4) significant digits in the final answer. 
 x = linspace(0,6,length(result));
@@ -103,21 +109,24 @@ disp(['Trapz integral (rotational volume) value: ', num2str(volume)])
 %-----------------------------------------------
 
 
-function ret = V(L, y_values)
-    L = min(max(L, 0), 6);
+function ret = V(xxx, y_values)
+    saved_y = [];
+    for i = 1:length(xxx)
+        L = min(max(xxx(i), 0), 6);
 
-    xx = linspace(0, L, length(y_values));
-    interpolation = interp1(linspace(0, 6, length(y_values)), y_values, xx);
+        xx = linspace(0, L, length(y_values));
+        interpolation = interp1(linspace(0, 6, length(y_values)), y_values, xx);
 
-    step_size = 6/(length(y_values)-1); % Interval of x [0,6] divided by the length of 'y_values's (i.e number of steps)
-    ret = pi .* step_size .* (sum(interpolation(1:length(y_values))) - (interpolation(1) + interpolation(length(y_values))) .* 0.5);
-
+        step_size = 6/(length(y_values)-1); % Interval of x [0,6] divided by the length of 'y_values's (i.e number of steps)
+        saved_y(i)= pi .* step_size .* (sum(interpolation(1:length(y_values))) - (interpolation(1) + interpolation(length(y_values))) .* 0.5);
+    end
+    ret = saved_y;
 end
 
 disp(['Separate function: Trapz integral (rotational volume) value: ', num2str(V(6, integrand))])
 
 
-g =@(x) V(x, integrand) - 0.65 * volume;
+g =@(x) V(x, integrand) - 0.65 * volume - x;
 
 function root = find_root_secant(f, x_0, x_1)
     %Import mathematical functions
@@ -150,3 +159,7 @@ end
 
 L_volume_65 = find_root_secant(g, 3, 5);
 disp(L_volume_65)
+hold on;
+plot(linspace(0,6, 20), V(linspace(0,6,20)))
+hold on;
+plot(L_volume_65(1), V(L_volume_65(1), integrand), "o")
