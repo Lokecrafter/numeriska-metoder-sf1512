@@ -5,7 +5,9 @@ close all; clear all; clc;
 global points
 
 points = [19, 16, 5; 
-           5, 19, 16]; % x and y given as columns
+          5, 19, 16]; % x and y given as columns
+% points = [19, 16, 5, 24, 2; 
+%            5, 19, 16, 2, 20]; % x and y given as columns
 
 circle_origin = [0; 0];
 circle_radius = 1;
@@ -71,14 +73,17 @@ end
 current_guess = start_guess_NR;
 prev_guess = 0;
 
-for i = 1:10
-
+for i = 1:20
     curr_X = current_guess(1);
     curr_Y = current_guess(2);
     curr_R = current_guess(3);
 
     jacobian_matrix = get_jacobian(curr_X, curr_Y, curr_R);
     function_values = get_function_values(curr_X, curr_Y, curr_R);
+
+    %Multiply first equation by five
+    %jacobian_matrix(1,:) = jacobian_matrix(1,:) .* 5;
+    %function_values(1) = function_values(1) .*5;
 
     t = jacobian_matrix\function_values;
 
@@ -88,16 +93,16 @@ for i = 1:10
 
 
 
-    disp("X: " + current_guess(1) + "    Y: " + current_guess(2) + "    R: " + current_guess(3) + "    E_trunk: " + E_trunk);
+    disp("X: " + current_guess(1) + "    Y: " + current_guess(2) + "    R: " + current_guess(3) + "    E_trunk: " + max(E_trunk));
     % exit cond.
     if max(E_trunk) < tolerance % max value of error vector
         if i >=2
+            disp("Iterations: " + i);
             break
         end
     end
 
     prev_guess = current_guess;
-
 end
 
 circle_origin(1) = current_guess(1);
@@ -108,3 +113,25 @@ circle_radius = current_guess(3);
 % square aspect for circle plot
 plot_cirlce(circle_origin, circle_radius)
 pbaspect([1 1 1]) %Sets square aspect ratio
+
+
+
+
+
+
+A = zeros([length(points), 3]);
+A(:,1) = ones([1, length(points)]);
+A(:,2) = points(1,:)';
+A(:,3) = points(2,:)';
+
+b = (points(1,:).^2 + points(2,:).^2)';
+
+c = A\b;
+
+X = 2 * c(2);
+Y = 2 * c(3);
+R = sqrt(c(1) + 4 * c(2) + 4 * c(3));
+
+
+hold on;
+plot_cirlce([X,Y], R);
