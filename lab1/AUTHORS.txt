@@ -1,0 +1,3 @@
+# This is the list of Lab2's significant contributors.
+Jacob Astberg
+Loke Lindberg Nilsson
