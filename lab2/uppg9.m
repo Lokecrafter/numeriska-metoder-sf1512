@@ -62,7 +62,7 @@ end
 % Run program
 % ------------------------------------------------
 
-result = do_euler(f, 0, 2.5, 0.5, 6, 10^(-6)); % Making the tolerance even smaller makes the error smaller which in 
+result = do_euler(f, 0, 2.5, 0.01, 6, 10^(-6)); % Making the tolerance even smaller makes the error smaller which in 
 
 %result = ode45(f, [0,6], 2.5).x;
 % turn prevents further error propagation throughout the rest of the methods below. 
@@ -160,6 +160,6 @@ end
 L_volume_65 = find_root_secant(g, 3, 5);
 disp(L_volume_65)
 hold on;
-plot(linspace(0,6, 20), V(linspace(0,6,20)))
+%plot(linspace(0,6, 20), V(linspace(0,6,20)))
 hold on;
 plot(L_volume_65(1), V(L_volume_65(1), integrand), "o")
