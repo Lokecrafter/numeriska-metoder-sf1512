@@ -41,7 +41,7 @@ for i = 1:10
     x = 0:h:L;
     
     A = zeros(n-1); % Autoprogrammed to be a squared of the size of ( ) w zeros. square matrix as standard.
-    
+    A = sparse(A);
     % b-vector
     b = zeros([n-1, 1]);
     
@@ -63,15 +63,15 @@ for i = 1:10
     % disp('Matrix A: ')
     % disp(A)
     
-    b(1) = b(1) - C1(x(1)) .* T0;
-    b(n-1) = b(n-1) - C3(x(n)) .* TL;
+    b(1) = b(1) - C1(x(2)) .* T0;
+    b(n-1) = b(n-1) - C3(x(n - 1)) .* TL;
     
     T = A\b;
 
     % disp('T: ')
     % disp(T)
     
-    x_index = round(n * 1.40 / L);
+    x_index = floor(n * 1.40 / L);
     % disp(T(x_index))
     
     T_index = T(x_index);
@@ -84,6 +84,7 @@ for i = 1:10
     % exit condition
     if E_trunk < tolerance
         if i >= 3
+            disp("iterations: " + i);
             break
         end
     end
@@ -92,4 +93,9 @@ for i = 1:10
     % disp(['Nr of steps n: ', n])
 end
 
-plot(x, [T0,T',TL], '-o');
+plot(x, [T0,T',TL], '-');
+hold on
+plot([1.4, 1.4], [min(T), max(T)])
+hold on
+x_index = floor(n * 0.5 * 1.40 / L);
+plot([0, L], [T(x_index), T(x_index)]);

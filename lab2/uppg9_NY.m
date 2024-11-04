@@ -150,7 +150,12 @@ error_func = @(x) V(x) - V_65_procent;
 x_guess_1 = 2;
 x_guess_2 = 2.1;
 tolerance = 1e-3;
-root = find_root_secant(error_func, x_guess_1, x_guess_2, tolerance);
+root1 = find_root_secant(error_func, x_guess_1, x_guess_2, tolerance);
+tolerance = tolerance * 0.5;
+root2 = find_root_secant(error_func, x_guess_1, x_guess_2, tolerance);
 
-disp("L 65% of volume: " + root(1) + " +/- " + root(2)*100 + " %")
-plot(root(1), V(root(1)), "o");
+disp("L 65% of volume 1: " + root1(1) + " +/- " + root1(2)*100 + " %")
+disp("L 65% of volume 2: " + root2(1) + " +/- " + root2(2)*100 + " %")
+disp("L 65% of volume  : " + root2(1) + " +/- " + abs(root1(1) - root2(1)));
+plot(root1(1), V(root1(1)), "o"); hold on;
+plot(root2(1), V(root2(1)), "o");

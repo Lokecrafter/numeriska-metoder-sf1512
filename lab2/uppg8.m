@@ -40,7 +40,7 @@ y_0 = 2.5; % y(x) initialvillkorsvärde, dvs y_0 = y(0) i detta fall.
 
 % 2.   Väljer steglängd h:
 %-------------------------
-h = 0.125;
+h = 0.5;
 
 % 3. Eulers metod (startkrav):
 %-----------------------------
@@ -55,15 +55,21 @@ y(1)=y_0; % Vi ger första värdet för y-vektorn
 
 
 % 3. Eulers metod (iterationsloop):
-%----------------------------------
-for n = 1:length(x) - 2 % Längden av x fast vi vill inte göra en 
-    % gång för många så det blir length(x)-1. n är vår loop-variabel.
-    y(n+1) = y(n) + h * f(y(n), x(n)); % Beräknar nästa y-värde med 
-    % Eulers metod! So simple! <3 :D
-end
+prev_y_6 = 0;
+for i = 1:20
+    %----------------------------------
+    for n = 1:length(x) - 1 % Längden av x fast vi vill inte göra en 
+        % gång för många så det blir length(x)-1. n är vår loop-variabel.
+        y(n+1) = y(n) + h * f(y(n), x(n)); % Beräknar nästa y-värde med 
+        % Eulers metod! So simple! <3 :D
+    end
 
-disp('y(6) = ')
-disp(y(6))
+    %disp("h = " + h + "   y(6) = " + y(end) + "    E_trunk = " + abs(y(end) - prev_y_6) + "   y(6) + E_trunk = " + (y(end) + abs(y(end) - prev_y_6)))
+    disp("h = " + h + "   y(6) = " + y(end) + "   y(6) + E_trunk = " + (y(end) + abs(y(end) - prev_y_6)))
+    %disp((y(end) + abs(y(end) - prev_y_6)));
+    prev_y_6 = y(end);
+    h = h *0.5;
+end
 plot(x,y,'-o'); % '-o' : 
 % '-' Skapar en solid linje som förbinder datapunkterna. 
 % 'o': Lägger till cirkelmarkörer vid varje datapunkt.
