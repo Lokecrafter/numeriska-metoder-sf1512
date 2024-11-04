@@ -1,9 +1,10 @@
 clear all; clc; close all;
 import Rocket.*;
 
-rocket1=Rocket(0,0,0,0,65,20,-15,0.01);
-rocket2=Rocket(0,0,0,0,17,5,-3,0.001);
+rocket1=Rocket(0,0,0,0,65,20,-15,0.01)
+rocket2=Rocket(0,0,0,0,17,5,-3,0.001)
 
+rocket1.x_pos
 
 
 % classdef BasicClass
