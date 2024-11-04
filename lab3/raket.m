@@ -1,5 +1,5 @@
 clear all; clc; clf;
-
+disp('hello world')
 
 
 % classdef BasicClass
