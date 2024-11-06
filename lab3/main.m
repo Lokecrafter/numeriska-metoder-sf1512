@@ -91,7 +91,7 @@ hold on
 plot(land_point(1),land_point(2),'o')
 disp(land_point)
 
-n=4;
+n=10;
 little_rockets= createArray(1,n,"Rocket");
 
 tt=linspace(0,rocket1.t_values(max_height_index+1),n);
@@ -101,7 +101,8 @@ little_rocket_y_vel=spline(rocket1.t_values,rocket1.y_vel,tt);
 little_rocket_x_vel=spline(rocket1.t_values,rocket1.x_vel,tt);
 
 f2=figure;
-for i = length(tt)
+plot(rocket1.x_pos, rocket1.y_pos, ":")
+for i = 1:length(tt)
     start_x_pos=little_rocket_x_start(i);
     start_y_pos=little_rocket_y_start(i);
     start_x_vel=little_rocket_x_vel(i);
@@ -112,7 +113,6 @@ for i = length(tt)
     plot(little_rockets(i).x_pos,little_rockets(i).y_pos,'o-')
     %hold on
 end
-little_rockets(1).x_pos
-little_rockets(2).x_pos
-little_rockets(3).x_pos
-little_rockets(4).x_pos
+
+hold on
+plot([0,300], [0,0]);
