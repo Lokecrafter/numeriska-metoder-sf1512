@@ -35,10 +35,10 @@ function ret=odefun(t,u)
     ret(4)=ret(4)/mass;
 end
 
-tspan=[0,30];
+tspan=[0,20];
 
 result=ode45(@odefun,tspan,u_0);
 %plot(result.x,result.y,'o-')
 plot(result.y(1,:),result.y(2,:),'-o') %y(1) är raketens x-position, y(2) är raketens y-position
 hold on 
-plot([0,100],[0,0])
+plot([0,70],[0,0])
