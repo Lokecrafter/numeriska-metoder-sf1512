@@ -49,25 +49,27 @@ plot([0,70],[0,0])
 %rocket1.x_vel=result.y(3,:);
 %rocket1.y_vel=result.y(4,:);
 
-[~,max_height_index]=max(rocket1.y_pos);
+% [~,max_height_index]=max(rocket1.y_pos);
 
-xx=[rocket1.x_pos(max_height_index-1:max_height_index+1)];
-yy=[rocket1.y_pos(max_height_index-1:max_height_index+1)];
+% xx=[rocket1.x_pos(max_height_index-1:max_height_index+1)];
+% yy=[rocket1.y_pos(max_height_index-1:max_height_index+1)];
 
-%[p,~,mu]=polyfit(xx,yy,2);
-p=polyfit(xx,yy,2);
-xxx=linspace(60,70,100);
+% %[p,~,mu]=polyfit(xx,yy,2);
+% p=polyfit(xx,yy,2);
+% xxx=linspace(60,70,100);
 
-hold on
+% hold on
 
-%plot(xxx,polyval(p,xxx,[],mu))
-hold on
-plot(xxx,polyval(p,xxx))
+% %plot(xxx,polyval(p,xxx,[],mu))
+% hold on
+% plot(xxx,polyval(p,xxx))
 
-x_max_height=-p(2)/(2*p(1))
-y_max_height=polyval(p,x_max_height) %SVAR på uppgift a
-hold on
-plot(x_max_height,y_max_height,'o')
+% x_max_height=-p(2)/(2*p(1))
+% y_max_height=polyval(p,x_max_height) %SVAR på uppgift a
+% hold on
+% plot(x_max_height,y_max_height,'o')
+[max_height_x, max_height_y, max_height_index] = rocket1.get_highest_point(); %SVAR på uppgift a
+plot(max_height_x, max_height_y, "o");
 
 %prev_index=10;
 %for i = prev_index:length(rocket1.y_pos)

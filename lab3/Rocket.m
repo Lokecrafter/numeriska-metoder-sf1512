@@ -77,5 +77,26 @@ classdef Rocket
             land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; 
             ret=land_point;
         end
+        function [x,y,index]=get_highest_point(obj)
+            [~,max_height_index]=max(obj.y_pos);
+
+            xx = [obj.x_pos(max_height_index-1:max_height_index+1)];
+            yy = [obj.y_pos(max_height_index-1:max_height_index+1)];
+
+            %[p,~,mu]=polyfit(xx,yy,2);
+            p = polyfit(xx,yy,2);
+
+            %Plot the interpolation
+            % xxx=linspace(60,70,100);
+            % hold on
+            % plot(xxx,polyval(p,xxx))
+
+            x_max_height = -p(2)/(2*p(1));
+            y_max_height = polyval(p,x_max_height);
+
+            x = x_max_height;
+            y = y_max_height;
+            index = max_height_index;
+        end
     end
 end
