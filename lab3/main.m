@@ -69,23 +69,24 @@ y_max_height=polyval(p,x_max_height) %SVAR på uppgift a
 hold on
 plot(x_max_height,y_max_height,'o')
 
-prev_index=10;
-for i = prev_index:length(rocket1.y_pos)
-    prev_sign=sign(rocket1.y_pos(prev_index));
-    current_sign=sign(rocket1.y_pos(i));
-    if current_sign ~= prev_sign
-        break
-    end
-    prev_index=i;
-end
-
-
-%beräknar skärningspunkt med x-axeln
-pt1=[rocket1.x_pos(prev_index);rocket1.y_pos(prev_index)];
-pt2=[rocket1.x_pos(prev_index+1);rocket1.y_pos(prev_index+1)];
-direction=pt2-pt1;
-
-land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; %SVAR på uppgift b
+%prev_index=10;
+%for i = prev_index:length(rocket1.y_pos)
+%    prev_sign=sign(rocket1.y_pos(prev_index));
+%    current_sign=sign(rocket1.y_pos(i));
+%    if current_sign ~= prev_sign
+%        break
+%    end
+%    prev_index=i;
+%end
+%
+%
+%%beräknar skärningspunkt med x-axeln
+%pt1=[rocket1.x_pos(prev_index);rocket1.y_pos(prev_index)];
+%pt2=[rocket1.x_pos(prev_index+1);rocket1.y_pos(prev_index+1)];
+%direction=pt2-pt1;
+%
+%land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; %SVAR på uppgift b
+land_point=rocket1.get_land_point
 
 hold on
 plot(land_point(1),land_point(2),'o')
@@ -116,3 +117,8 @@ end
 
 hold on
 plot([0,300], [0,0]);
+land_points=createArray(2,n);
+for i = 1:n
+    land_points(:,i)=little_rockets(i).get_land_point();
+end
+land_points

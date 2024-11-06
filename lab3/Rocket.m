@@ -59,5 +59,23 @@ classdef Rocket
             obj.y_vel=result.y(4,:);
             ret=obj;
         end
+        function ret=get_land_point(obj)
+            prev_index=10;
+            for i = prev_index:length(obj.y_pos)
+                prev_sign=sign(obj.y_pos(prev_index));
+                current_sign=sign(obj.y_pos(i));
+                if current_sign ~= prev_sign
+                    break
+                end
+                prev_index=i;
+            end
+            %beräknar skärningspunkt med x-axeln
+            pt1=[obj.x_pos(prev_index);obj.y_pos(prev_index)];
+            pt2=[obj.x_pos(prev_index+1);obj.y_pos(prev_index+1)];
+            direction=pt2-pt1;
+            
+            land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; 
+            ret=land_point;
+        end
     end
 end
