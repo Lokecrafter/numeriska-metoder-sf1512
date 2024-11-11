@@ -34,7 +34,7 @@ clear; clf; clc;
 
 % 1.   dy/dx och initialvillkoret:
 %---------------------------------
-f=@(y,x) -(1/6 + (pi.*sin(pi.*x))/(1.6 - cos(pi.*x))).*y;
+f=@(fx, fy) -(1/6 + (pi.*sin(pi.*fx))/(1.6 - cos(pi.*fx))).*fy;
 x_0 = 0; % x initialvillkorsvärde.
 y_0 = 2.5; % y(x) initialvillkorsvärde, dvs y_0 = y(0) i detta fall.
 
@@ -55,20 +55,25 @@ y(1)=y_0; % Vi ger första värdet för y-vektorn
 
 
 % 3. Eulers metod (iterationsloop):
-prev_y_6 = 0;
+prev_y_6 = 2.5;
 for i = 1:20
+    x = x_0:h:x_max; % Intervallet för x vi vill jobba på.
+    y = zeros(size(x));
+    y(1) = y_0;
     %----------------------------------
-    for n = 1:length(x) - 1 % Längden av x fast vi vill inte göra en 
+    for a = 1:length(x) - 1 % Längden av x fast vi vill inte göra en 
         % gång för många så det blir length(x)-1. n är vår loop-variabel.
-        y(n+1) = y(n) + h * f(y(n), x(n)); % Beräknar nästa y-värde med 
+        y(a+1) = y(a) + h * f(x(a), y(a)); % Beräknar nästa y-värde med 
         % Eulers metod! So simple! <3 :D
     end
-
+    
     %disp("h = " + h + "   y(6) = " + y(end) + "    E_trunk = " + abs(y(end) - prev_y_6) + "   y(6) + E_trunk = " + (y(end) + abs(y(end) - prev_y_6)))
-    disp("h = " + h + "   y(6) = " + y(end) + "   y(6) + E_trunk = " + (y(end) + abs(y(end) - prev_y_6)))
+    disp("h = " + h + "   y(6) = " + y(end) + "   y(6) + E_trunk = " + (y(end) + abs(y(end) - prev_y_6)) + "   E_trunk = " + (abs(y(end) - prev_y_6)))
+    %disp("E_trunk = " + (abs(y(end) - prev_y_6)))
     %disp((y(end) + abs(y(end) - prev_y_6)));
     prev_y_6 = y(end);
     h = h *0.5;
+    
 end
 plot(x,y,'-o'); % '-o' : 
 % '-' Skapar en solid linje som förbinder datapunkterna. 
@@ -77,3 +82,7 @@ xlabel('x');
 ylabel('y');
 grid on;
 title('Eulers metod för Upg 8')
+
+
+hold on;
+%ode45(f, [0,6], 2.5)
