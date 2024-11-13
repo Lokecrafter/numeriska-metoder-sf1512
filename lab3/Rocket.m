@@ -26,7 +26,6 @@ classdef Rocket
             end
         end
         function ret=solve_trajectory(obj,end_time)
-            u_0=[obj.x_pos;obj.y_pos;obj.x_vel;obj.y_vel];
             function ret=odefun(t,u)
                 ret=[0;0;0;0];
                 ret(1)=u(3);
@@ -34,7 +33,7 @@ classdef Rocket
                 
                 V=hypot(u(3),u(4));
                 K=obj.air_resistance;
-                F=obj.force*(t<=obj.burn_time); %istället för en if-sats
+                F=obj.force*(t<obj.burn_time); %istället för en if-sats
                 mass=obj.body_mass+obj.fuel_mass*max(0, (obj.burn_time-t)/obj.burn_time);
                 mass=mass/1000; %massan i kilo
                 angle=0;
@@ -49,7 +48,10 @@ classdef Rocket
                 ret(3)=ret(3)/mass;
                 ret(4)=ret(4)/mass;
             end
-            tspan=[0,end_time];
+            
+            %solve interval for rocket burn time
+            u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
+            tspan=[0,obj.burn_time];
             result=ode45(@odefun,tspan,u_0);
             
             obj.t_values=result.x;
@@ -57,6 +59,35 @@ classdef Rocket
             obj.y_pos=result.y(2,:);
             obj.x_vel=result.y(3,:);
             obj.y_vel=result.y(4,:);
+            
+            
+            %solve interval for rocket burn time
+            u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
+            tspan=[obj.burn_time,obj.burn_time+2];
+            result=ode45(@odefun,tspan,u_0);
+            
+            obj.t_values=[obj.t_values,result.x(2:end)];
+            obj.x_pos=[obj.x_pos,result.y(1,2:end)];
+            obj.y_pos=[obj.y_pos,result.y(2,2:end)];
+            obj.x_vel=[obj.x_vel,result.y(3,2:end)];
+            obj.y_vel=[obj.y_vel,result.y(4,2:end)];
+            
+            
+            %solve interval for rocket burn time
+            u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
+            tspan=[obj.burn_time+2,end_time];
+            result=ode45(@odefun,tspan,u_0);
+            
+            obj.t_values=[obj.t_values,result.x(2:end)];
+            obj.x_pos=[obj.x_pos,result.y(1,2:end)];
+            obj.y_pos=[obj.y_pos,result.y(2,2:end)];
+            obj.x_vel=[obj.x_vel,result.y(3,2:end)];
+            obj.y_vel=[obj.y_vel,result.y(4,2:end)];
+            
+            
+            
+            
+            
             ret=obj;
         end
         function ret=get_land_point(obj)
