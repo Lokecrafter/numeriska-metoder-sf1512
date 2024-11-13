@@ -1,7 +1,7 @@
 clear all; clc; close all;
 import Rocket.*;
 f1=figure;
-
+pbaspect([1 1 1])
 
 rocket1=Rocket(0,0,0,0,45,20,3,0.01,10);
 
@@ -38,7 +38,7 @@ function ret=find_three_best_candidates(t_values,x_values)
     ret=[t_values(index1),t_values(index2),t_values(index3)];
 end
 
-f3=figure;
+f2=figure;
 for iteration =1:6
 
     %Interpolate start conditions for small rocket.
@@ -89,7 +89,8 @@ end
 hold on
 plot(rocket1.t_values,rocket1.y_pos,'-o')
 
-f2=figure;
+f3=figure;
+pbaspect([1 1 1])
 hold on
 plot([0,300], [0,0]);
 
