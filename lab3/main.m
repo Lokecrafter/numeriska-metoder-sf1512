@@ -29,17 +29,18 @@ little_rockets= createArray(1,number_of_small_rockets,"Rocket");
 t_interval=[0,rocket1.t_values(max_height_index+1)];
 
 function ret=find_three_best_candidates(t_values,x_values)
-    [x_max1,index1]=max(x_values);
-    x_values(index1)=0;
-    [x_max2,index2]=max(x_values);
-    x_values(index2)=0;
-    [x_max3,index3]=max(x_values);
-    x_values(index3)=0;
-    ret=[t_values(index1),t_values(index2),t_values(index3)];
+    [~,index1]=max(x_values);
+    % x_values(index1)=0;
+    % [~,index2]=max(x_values);
+    % x_values(index2)=0;
+    % [~,index3]=max(x_values);
+    % x_values(index3)=0;
+    %ret=[t_values(index1),t_values(index2),t_values(index3)];
+    ret=[t_values(index1),t_values(index1-1),t_values(index1 +1)];
 end
 
 f2=figure;
-for iteration =1:6
+for iteration =1:4
 
     %Interpolate start conditions for small rocket.
     small_rocket_start_times=linspace(t_interval(1),t_interval(2),number_of_small_rockets);
@@ -85,6 +86,20 @@ for iteration =1:6
 
     
 end
+
+[~, max_x_distance_index] = max(land_points(1,:));
+max_x_distance_small_rocket_polynom = polyfit(small_rocket_start_times(max_x_distance_index-1:max_x_distance_index+1),land_points(1,max_x_distance_index-1:max_x_distance_index+1),2);
+
+tt=linspace(2.94, 3.06, 1000);
+hold on
+plot(tt, polyval(max_x_distance_small_rocket_polynom, tt), "-.");
+
+p = max_x_distance_small_rocket_polynom;
+time_to_fire_small_rocket = -p(2)/(2*p(1));
+disp("Time to fire small rocket: " + time_to_fire_small_rocket);
+
+hold on
+plot([time_to_fire_small_rocket, time_to_fire_small_rocket], [-200, 300], "-")
 
 hold on
 plot(rocket1.t_values,rocket1.y_pos,'-o')
