@@ -1,3 +1,5 @@
+disp("Hello!");
+
 function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
     n = number_of_steps;
     num_equations = length(y0);
@@ -7,7 +9,7 @@ function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
         h = (x_span(2) - x_span(1)) / n;
         xx = x_span(1):h:x_span(2);
         yy = zeros(num_equations, length(xx));
-        yy(1) = y0;
+        yy(:,1) = y0;
 
         %Do Runge-Kutta solve
         for i = 1:(n-1)
@@ -30,9 +32,10 @@ function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
             end
         end
 
+        prev_last_y = yy(:,end);
         n = n * 2;
-        prev_last_y(yy(:,end))
     end
+    ret.y = yy;
 end
 
 function ret = own_polyfit(x_coords, y_coords, grade)
@@ -46,3 +49,14 @@ end
 function ret = own_spline(x_coords, y_coords, x_query)
 
 end
+
+
+
+odefun = @(t, y) t * y;
+x_span = [0, 1];
+y0 = [0; 0];
+
+result = own_ode45(odefun, x_span, y0, 10, 1e-2);
+class(result)
+result = ode45(odefun, x_span, y0);
+class(result)
