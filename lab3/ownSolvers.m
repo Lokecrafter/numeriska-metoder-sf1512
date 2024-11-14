@@ -57,7 +57,14 @@ function ret = own_polyfit(x_coords, y_coords, grade)
 end
 
 function ret = own_polyval(polynom, x_query)
+    y_result = zeros(size(x_query));
+    grade = length(polynom) - 1;
 
+    for i = 1:grade+1
+        y_result = y_result + polynom(i) .* (x_query .^ (grade + 1 - i));
+    end
+
+    ret = y_result;
 end
 
 function ret = own_spline(x_coords, y_coords, x_query)
@@ -84,12 +91,15 @@ x_data = [-1, 2, 1, 2];
 y_data = [1, 2, 1, 3];
 plot(x_data, y_data, "o-")
 
-p = polyfit(x_data, y_data, 2);
-disp(p)
-hold on
-plot(xx, polyval(p,xx), "o");
+% p = polyfit(x_data, y_data, 2);
+% disp(p)
+% hold on
+% plot(xx, polyval(p,xx), "o");
+
 p = own_polyfit(x_data, y_data, 2);
 disp(p)
 
 hold on
-plot(xx, polyval(p,xx), ":");
+plot(xx, polyval(p,xx), "o");
+hold on
+plot(xx, own_polyval(p,xx), ":");
