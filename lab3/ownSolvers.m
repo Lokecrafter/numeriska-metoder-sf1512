@@ -42,17 +42,17 @@ function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
 end
 
 function ret = own_polyfit(x_coords, y_coords, grade)
-    A = zeros(length(x_coords), grade+1);
+    A = ones(length(x_coords), grade+1);
     for i = 1:length(x_coords)
-        for j = grade:0
-            A(i,j) = x_coords(i) .^ j;
+        A(i,1:end-1) = x_coords(i);
+        for j = 1:grade
+            A(i,j) = A(i,j) .^ (grade + 1 - j);
         end
     end
 
     b = y_coords';
     c = A\b;
 
-    disp(A)
     ret = c';
 end
 
@@ -79,11 +79,17 @@ end
 % plot(result.x, result.y);
 
 
-x_data = [-1, 0, 1];
-y_data = [1, 0, 1];
+xx = linspace(-1, 2, 10);
+x_data = [-1, 2, 1, 2];
+y_data = [1, 2, 1, 3];
 plot(x_data, y_data, "o-")
 
 p = polyfit(x_data, y_data, 2);
 disp(p)
+hold on
+plot(xx, polyval(p,xx), "o");
 p = own_polyfit(x_data, y_data, 2);
 disp(p)
+
+hold on
+plot(xx, polyval(p,xx), ":");
