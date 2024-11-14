@@ -12,7 +12,7 @@ function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
         yy(:,1) = y0;
 
         %Do Runge-Kutta solve
-        for i = 1:(n-1)
+        for i = 1:n
             k1 = odefun(xx(i), yy(i));
             k2 = odefun(xx(i) + h * 0.5, yy(i) + h * k1 * 0.5);
             k3 = odefun(xx(i) + h * 0.5, yy(i) + h * k2 * 0.5);
@@ -35,11 +35,25 @@ function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
         prev_last_y = yy(:,end);
         n = n * 2;
     end
+    ret.x = xx;
     ret.y = yy;
+    ret.E_trunk = E_trunk;
+    ret.iterations = iteration;
 end
 
 function ret = own_polyfit(x_coords, y_coords, grade)
+    A = zeros(length(x_coords), grade+1);
+    for i = 1:length(x_coords)
+        for j = grade:0
+            A(i,j) = x_coords(i) .^ j;
+        end
+    end
 
+    b = y_coords';
+    c = A\b;
+
+    disp(A)
+    ret = c';
 end
 
 function ret = own_polyval(polynom, x_query)
@@ -52,11 +66,24 @@ end
 
 
 
-odefun = @(t, y) t * y;
-x_span = [0, 1];
-y0 = [0; 0];
+% odefun = @(t, y) 0 * y + t;
+% x_span = [0, 1];
+% y0 = [0; 0];
 
-result = own_ode45(odefun, x_span, y0, 10, 1e-2);
-class(result)
-result = ode45(odefun, x_span, y0);
-class(result)
+% result = own_ode45(odefun, x_span, y0, 10, 1e-2);
+% plot(result.x, result.y);
+% hold on
+% disp("E_trunk: " + result.E_trunk + "   Iterations: " + result.iterations);
+
+% result = ode45(odefun, x_span, y0);
+% plot(result.x, result.y);
+
+
+x_data = [-1, 0, 1];
+y_data = [1, 0, 1];
+plot(x_data, y_data, "o-")
+
+p = polyfit(x_data, y_data, 2);
+disp(p)
+p = own_polyfit(x_data, y_data, 2);
+disp(p)
