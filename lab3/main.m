@@ -1,5 +1,6 @@
 clear all; clc; close all;
 import Rocket.*;
+import ownSolvers.*;
 f1=figure;
 pbaspect([1 1 1])
 
