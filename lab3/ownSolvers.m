@@ -68,7 +68,48 @@ function ret = own_polyval(polynom, x_query)
 end
 
 function ret = own_spline(x_coords, y_coords, x_query)
+    h = zeros(1,length(x_coords)-1);
+    yh = zeros(1,length(y_coords)-1);
+    c = zeros(1,length(y_coords)-1);
+    for i = 1:length(h)
+        h(i) = x_coords(i+1)-x_coords(i);
+        yh(i) = y_coords(i+1)-y_coords(i);
+        c(i) = yh(1)/h(i);
+        
+    end
+    A = zeros(length(x_coords),length(x_coords));
+    b = zeros(length(x_coords),1);
+    for row = 2:length(x_coords)-1
+        A(row,row)=2*(h(row)+h(row-1));
+        A(row,row+1)=h(row-1);
+        A(row,row-1)=h(row);
+        b(row) = yh(i) * h(i-1)/h(i) + yh(i-1) * h(i)/h(i-1);
+    end
+    A(1,1)=2*h(1);
+    A(1,2)=h(1);
+    A(end,end)=2*h(end);
+    A(end,end-1)=h(end);
+    b(1) = yh(1);
+    b(end) = yh(end);
 
+    disp(h)
+    disp(A)
+    disp(b)
+
+    k = A\(3*b);
+    y_query = zeros(size(x_query));
+    for j = 1:length(x_query)
+        x = x_query(j);
+        for i = 1:length(x_coords)-1
+            is_inside_interval = discretize(x, [x_coords(i),x_coords(i+1)])==1;
+            if is_inside_interval 
+                disp(i)
+                break
+            end
+        end
+        y_query(j) = y_coords(i) + c(i)*(x-x_coords(i)) + (x-x_coords(i))*(x-x_coords(i+1))*((k(i+1)-c(i))*(x-x_coords(i))+(k(i)-c(i))*(x-x_coords(i+1)))/(h(i)*h(i));
+    end
+    ret = y_query;
 end
 
 
@@ -87,7 +128,7 @@ end
 
 
 xx = linspace(-1, 2, 10);
-x_data = [-1, 2, 1, 2];
+x_data = [-1, 0, 1, 2];
 y_data = [1, 2, 1, 3];
 plot(x_data, y_data, "o-")
 
@@ -96,10 +137,17 @@ plot(x_data, y_data, "o-")
 % hold on
 % plot(xx, polyval(p,xx), "o");
 
-p = own_polyfit(x_data, y_data, 2);
-disp(p)
+%p = own_polyfit(x_data, y_data, 2);
+%disp(p)
 
+%hold on
+%plot(xx, polyval(p,xx), "o");
+%hold on
+%plot(xx, own_polyval(p,xx), ":");
 hold on
-plot(xx, polyval(p,xx), "o");
+yy = own_spline(x_data,y_data,xx);
+plot(xx,yy,'o:')
 hold on
-plot(xx, own_polyval(p,xx), ":");
+yy = spline(x_data,y_data,xx);
+plot(xx,yy,'o-')
+
