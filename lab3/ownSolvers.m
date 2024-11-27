@@ -68,52 +68,57 @@ function ret = own_polyval(polynom, x_query)
 end
 
 function ret = own_spline(x_coords, y_coords, x_query)
-    h = zeros(1,length(x_coords)-1);
-    yh = zeros(1,length(y_coords)-1);
-    c = zeros(1,length(y_coords)-1);
-    for i = 1:length(h)
-        h(i) = x_coords(i+1)-x_coords(i);
-        yh(i) = y_coords(i+1)-y_coords(i);
-        c(i) = yh(1)/h(i);
-        
+    xh = zeros(1, length(x_coords)-1);
+    yh = zeros(1, length(y_coords)-1);
+    c =  zeros(1, length(y_coords)-1);
+
+    %Calc constants 
+    for i = 1:length(xh)
+        xh(i) = x_coords(i+1) - x_coords(i);
+        yh(i) = y_coords(i+1) - y_coords(i);
+        c(i) = yh(i) / xh(i);
     end
-    A = zeros(length(x_coords),length(x_coords));
+
+    %Construct splines matrix and vector
+    A = zeros(length(x_coords));
     b = zeros(length(x_coords),1);
     for row = 2:length(x_coords)-1
-        A(row,row)=2*(h(row)+h(row-1));
-        A(row,row+1)=h(row-1);
-        A(row,row-1)=h(row);
-        b(row) = yh(i) * h(i-1)/h(i) + yh(i-1) * h(i)/h(i-1);
+        A(row,row-1) = xh(row);
+        A(row,row) = 2 * (xh(row) + xh(row-1));
+        A(row,row+1) = xh(row-1);
+        b(row) = yh(i) * xh(i-1)/xh(i) + yh(i-1) * xh(i)/xh(i-1);
     end
-    A(1,1)=2*h(1);
-    A(1,2)=h(1);
-    A(end,end)=2*h(end);
-    A(end,end-1)=h(end);
+
+    A(1,1) = 2*xh(1);
+    A(1,2) = xh(1);
+    A(end,end) = 2*xh(end);
+    A(end,end-1) = xh(end);
     b(1) = yh(1);
     b(end) = yh(end);
 
-    disp(h)
+    disp(xh)
     disp(A)
     disp(b)
 
-    k = A\(3*b);
+    %K-values in Hermite's
+    k = A\(3.*b);
+
     y_query = zeros(size(x_query));
     for j = 1:length(x_query)
         x = x_query(j);
         for i = 1:length(x_coords)-1
             is_inside_interval = discretize(x, [x_coords(i),x_coords(i+1)])==1;
             if is_inside_interval 
-                disp(i)
                 break
             end
         end
-        y_query(j) = y_coords(i) + c(i)*(x-x_coords(i)) + (x-x_coords(i))*(x-x_coords(i+1))*((k(i+1)-c(i))*(x-x_coords(i))+(k(i)-c(i))*(x-x_coords(i+1)))/(h(i)*h(i));
+        y_query(j) = y_coords(i) + c(i)*(x-x_coords(i)) + (x-x_coords(i)) * (x-x_coords(i+1)) * ((k(i+1) - c(i)) * (x - x_coords(i)) + (k(i) - c(i)) * (x - x_coords(i+1))) / (xh(i)*xh(i));
     end
     ret = y_query;
 end
 
 
-
+clear all; clc; close all;
 % odefun = @(t, y) 0 * y + t;
 % x_span = [0, 1];
 % y0 = [0; 0];
