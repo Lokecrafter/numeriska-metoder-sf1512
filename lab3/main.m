@@ -1,27 +1,33 @@
 clear all; clc; close all;
 import Rocket.*;
-import ownSolvers.*;
 f1=figure;
-pbaspect([1 1 1])
 
-rocket1=Rocket(0,0,0,0,45,20,3,0.01,10);
+angle = deg2rad(80);
+start_vel = 20 * [cos(angle), sin(angle)];
+rocket1=Rocket(0,0,start_vel(1),start_vel(2),45,20,3,0.01,10);
 
 %Solve and plot big rocket's trajectory
-rocket1=rocket1.solve_trajectory(20);
-plot(rocket1.x_pos,rocket1.y_pos,'-o')
+rocket1=rocket1.solve_trajectory(30);
+plot(rocket1.x_pos,rocket1.y_pos,'-*')
 hold on 
-plot([0,70],[0,0])
+plot([0,32],[0,0])
 
 %Find and plot the max height point of large rocket
 [max_height_x, max_height_y, max_height_index] = rocket1.get_highest_point(); %SVAR på uppgift a
 hold on;
-plot(max_height_x, max_height_y, "o");
+plot(max_height_x, max_height_y, "o",'MarkerSize',10);
 
 %Find and plot landing point of large rocket
 land_point = rocket1.get_land_point;
 hold on
-plot(land_point(1),land_point(2),'o')
+plot(land_point(1),land_point(2),'o','MarkerSize',10)
 disp(land_point)
+
+%Make plots pretty
+title("Large rocket trajectory");
+xlabel("x position");
+ylabel("y position");
+legend(["Trajectory", "Ground", "Max height.   x: " + max_height_x + ",   y:" + max_height_y, "Land point.   x: " + land_point(1) + ",   y:" + land_point(2)], 'Location', 'northwest');
 
 %Solve small rocket best fire point/time.
 number_of_small_rockets=20;
@@ -51,15 +57,13 @@ for iteration =1:4
     little_rocket_x_vel=spline(rocket1.t_values,rocket1.x_vel,small_rocket_start_times);
 
     %Solve and plot small rocket trajectories
-    %f2=figure;
-    %plot(rocket1.x_pos, rocket1.y_pos, ":")
     for i = 1:number_of_small_rockets
         start_x_pos=little_rocket_x_start(i);
         start_y_pos=little_rocket_y_start(i);
         start_x_vel=little_rocket_x_vel(i);
         start_y_vel=little_rocket_y_vel(i);
         %Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,12,5,4,0.001,3);
-        little_rockets(i)=Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,12,5,4,0.001,3).solve_trajectory(40);
+        little_rockets(i)=Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,12,5,4,0.001,3).solve_trajectory(50);
         hold on
        %plot(little_rockets(i).x_pos,little_rockets(i).y_pos,'o-')
         %hold on
@@ -91,7 +95,7 @@ end
 [~, max_x_distance_index] = max(land_points(1,:));
 max_x_distance_small_rocket_polynom = polyfit(small_rocket_start_times(max_x_distance_index-1:max_x_distance_index+1),land_points(1,max_x_distance_index-1:max_x_distance_index+1),2);
 
-tt=linspace(2.94, 3.06, 1000);
+tt=linspace(3, 4, 1000);
 hold on
 plot(tt, polyval(max_x_distance_small_rocket_polynom, tt), "-.");
 
@@ -102,19 +106,35 @@ disp("Time to fire small rocket: " + time_to_fire_small_rocket);
 hold on
 plot([time_to_fire_small_rocket, time_to_fire_small_rocket], [-200, 300], "-")
 
-hold on
-plot(rocket1.t_values,rocket1.y_pos,'-o')
+%Make plots pretty
+title("Distance reached against small rocket start time");
+xlabel("Time");
+ylabel("Distance reached");
+
+
+
+
+
+
 
 f3=figure;
 pbaspect([1 1 1])
+
+hold on
+plot(little_rockets(index).x_pos,little_rockets(index).y_pos,'*-')
+
 hold on
 plot([0,300], [0,0]);
 
 hold on
-plot(land_points(1,index), land_points(2,index), "o")
-
-hold on
-plot(little_rockets(index).x_pos,little_rockets(index).y_pos,'o-')
+plot(land_points(1,index), land_points(2,index), "o",'MarkerSize',10)
 
 hold on 
 plot(rocket1.x_pos, rocket1.y_pos, ":")
+
+
+%Make plots pretty
+title("Small rocket trajectory");
+xlabel("x position");
+ylabel("y position");
+legend(["Small rocket trajectory", "Ground", "Land point.   x: " + land_point(1) + ",   y:" + land_point(2), "Large rocket trajectory"], 'Location', 'southwest');
