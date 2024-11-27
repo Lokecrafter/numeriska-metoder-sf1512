@@ -61,7 +61,7 @@ classdef Rocket
             obj.y_vel=result.y(4,:);
             
             
-            %solve interval for rocket burn time
+            %solve interval for rocket slowing time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time,obj.burn_time+2];
             result=ode45(@odefun,tspan,u_0);
@@ -73,7 +73,7 @@ classdef Rocket
             obj.y_vel=[obj.y_vel,result.y(4,2:end)];
             
             
-            %solve interval for rocket burn time
+            %solve interval for rocket falling time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time+2,end_time];
             result=ode45(@odefun,tspan,u_0);
