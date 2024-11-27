@@ -101,7 +101,7 @@ function ret = own_spline(x_coords, y_coords, x_query)
     disp(b)
 
     %K-values in Hermite's
-    k = A\(3.*b);
+    k = A\(3*b);
 
     y_query = zeros(size(x_query));
     for j = 1:length(x_query)
@@ -132,10 +132,12 @@ clear all; clc; close all;
 % plot(result.x, result.y);
 
 
-xx = linspace(-1, 2, 10);
-x_data = [-1, 0, 1, 2];
-y_data = [1, 2, 1, 3];
-plot(x_data, y_data, "o-")
+xx = linspace(-1, 6, 301);
+x_data = [-1, 0, 1, 2, 3, 4, 5, 6];
+y_data = [1, 2.5, 1, 3, 3, 4, 5, 6];
+% x_data = [-1, 0, 1, 2];
+% y_data = [1, 2.5, 1, 3];
+plot(x_data, y_data, "o")
 
 % p = polyfit(x_data, y_data, 2);
 % disp(p)
@@ -151,8 +153,11 @@ plot(x_data, y_data, "o-")
 %plot(xx, own_polyval(p,xx), ":");
 hold on
 yy = own_spline(x_data,y_data,xx);
-plot(xx,yy,'o:')
+plot(xx,yy,':')
 hold on
 yy = spline(x_data,y_data,xx);
-plot(xx,yy,'o-')
+plot(xx,yy,'-')
+hold on
+% yy = makima(x_data,y_data,xx);
+% plot(xx,yy,'-')
 
