@@ -1,6 +1,7 @@
 clear all; clc; close all;
 import Rocket.*;
 f1=figure;
+format long
 
 angle = deg2rad(80);
 start_vel = 20 * [cos(angle), sin(angle)];
@@ -16,11 +17,15 @@ plot([0,32],[0,0])
 [max_height_x, max_height_y, max_height_index] = rocket1.get_highest_point(); %SVAR på uppgift a
 hold on;
 plot(max_height_x, max_height_y, "o",'MarkerSize',10);
+disp('max height of large rocket:')
+disp(max_height_y)
+
 
 %Find and plot landing point of large rocket
 land_point = rocket1.get_land_point;
 hold on
 plot(land_point(1),land_point(2),'o','MarkerSize',10)
+disp('landingpoint:')
 disp(land_point)
 
 %Make plots pretty
@@ -82,6 +87,7 @@ for iteration =1:4
     %disp(max(land_points(1,:)))
 
     [x_value,index]=max(land_points(1,:));
+    disp('x-value:')
     disp(x_value)
     %t_interval(1)=small_rocket_start_times(index-1);
     %t_interval(2)=small_rocket_start_times(index+1);

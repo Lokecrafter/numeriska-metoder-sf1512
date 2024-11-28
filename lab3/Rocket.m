@@ -33,9 +33,9 @@ classdef Rocket
                 
                 V=hypot(u(3),u(4));
                 K=obj.air_resistance;
-                F=obj.force*(t<obj.burn_time); %istället för en if-sats
+                F=obj.force*(t<obj.burn_time); %instead of an if-sats
                 mass=obj.body_mass+obj.fuel_mass*max(0, (obj.burn_time-t)/obj.burn_time);
-                mass=mass/1000; %massan i kilo
+                mass=mass/1000; %mass in kilo
                 angle=0;
                 if u(3)==0 && u(4) == 0 
                     angle=deg2rad(80);
@@ -100,7 +100,7 @@ classdef Rocket
                 end
                 prev_index=i;
             end
-            %beräknar skärningspunkt med x-axeln
+            %calculates when the rocket crosses the x-axis
             pt1=[obj.x_pos(prev_index);obj.y_pos(prev_index)];
             pt2=[obj.x_pos(prev_index+1);obj.y_pos(prev_index+1)];
             direction=pt2-pt1;
