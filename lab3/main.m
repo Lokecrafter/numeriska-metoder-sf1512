@@ -1,5 +1,29 @@
 clear all; clc; close all;
 import Rocket.*;
+import Solvers.*;
+own_solver = Solvers(false);
+% xx = linspace(-1, 6, 301);
+% x_data = [-1, 0, 1, 2, 3, 4, 5, 6];
+% y_data = [1, 2.5, 1, 3, 3, 4, 5, 6];
+% % x_data = [-1, 0, 1, 2];
+% % y_data = [1, 2.5, 1, 3];
+% plot(x_data, y_data, "o")
+
+
+% %hold on
+% %plot(xx, polyval(p,xx), "o");
+% %hold on
+% %plot(xx, own_polyval(p,xx), ":");
+% hold on
+% yy = own_solver.own_spline(x_data,y_data,xx);
+% plot(xx,yy,':')
+% hold on
+% yy = spline(x_data,y_data,xx);
+% plot(xx,yy,'-')
+% hold on
+% % yy = makima(x_data,y_data,xx);
+% % plot(xx,yy,'-')
+
 f1=figure;
 format long
 
@@ -51,11 +75,61 @@ function ret=find_three_best_candidates(t_values,x_values)
     ret=[t_values(index1),t_values(index1-1),t_values(index1 +1)];
 end
 
+figureROcket1Interp = figure;
+    tspan1=[0,rocket1.burn_time];
+    tspan2=[rocket1.burn_time,rocket1.burn_time+2];
+    tspan3=[rocket1.burn_time+2,30];
+
+    val_amount = 1000;
+    tt = [linspace(tspan1(1), tspan1(2), val_amount), linspace(tspan2(1), tspan2(2), val_amount), linspace(tspan3(1), tspan3(2), val_amount)];
+
+    subplot(2, 2, 1);
+    plot(rocket1.t_values, rocket1.y_pos, 'o');
+    hold on;
+    y_start=own_solver.own_spline(rocket1.t_values,rocket1.y_pos,tt);
+    plot(tt, y_start, ':');
+    hold on;
+    y_start=spline(rocket1.t_values,rocket1.y_pos,tt);
+    plot(tt, y_start, '-');
+
+    subplot(2, 2, 2);
+    plot(rocket1.t_values, rocket1.x_pos, 'o');
+    hold on;
+    x_start=own_solver.own_spline(rocket1.t_values,rocket1.x_pos,tt);
+    plot(tt, x_start, ':');
+    hold on;
+    x_start=spline(rocket1.t_values,rocket1.x_pos,tt);
+    plot(tt, x_start, '-');
+
+    subplot(2, 2, 3);
+    plot(rocket1.t_values, rocket1.y_vel, 'o');
+    hold on;
+    y_vel=own_solver.own_spline(rocket1.t_values,rocket1.y_vel,tt);
+    plot(tt, y_vel, ':');
+    hold on;
+    y_vel=spline(rocket1.t_values,rocket1.y_vel,tt);
+    plot(tt, y_vel, '-');
+
+    subplot(2, 2, 4);
+    plot(rocket1.t_values, rocket1.x_vel, 'o');
+    hold on;
+    x_vel=own_solver.own_spline(rocket1.t_values,rocket1.x_vel,tt);
+    plot(tt, x_vel, ':');
+    hold on;
+    x_vel=spline(rocket1.t_values,rocket1.x_vel,tt);
+    plot(tt, x_vel, '-');
+
+
+
 f2=figure;
 for iteration =1:4
 
     %Interpolate start conditions for small rocket.
     small_rocket_start_times=linspace(t_interval(1),t_interval(2),number_of_small_rockets);
+    % little_rocket_y_start=own_solver.own_spline(rocket1.t_values,rocket1.y_pos,small_rocket_start_times);
+    % little_rocket_x_start=own_solver.own_spline(rocket1.t_values,rocket1.x_pos,small_rocket_start_times);
+    % little_rocket_y_vel=own_solver.own_spline(rocket1.t_values,rocket1.y_vel,small_rocket_start_times);
+    % little_rocket_x_vel=own_solver.own_spline(rocket1.t_values,rocket1.x_vel,small_rocket_start_times);
     little_rocket_y_start=spline(rocket1.t_values,rocket1.y_pos,small_rocket_start_times);
     little_rocket_x_start=spline(rocket1.t_values,rocket1.x_pos,small_rocket_start_times);
     little_rocket_y_vel=spline(rocket1.t_values,rocket1.y_vel,small_rocket_start_times);
@@ -70,10 +144,9 @@ for iteration =1:4
         %Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,12,5,4,0.001,3);
         little_rockets(i)=Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,12,5,4,0.001,3).solve_trajectory(50);
         hold on
-       %plot(little_rockets(i).x_pos,little_rockets(i).y_pos,'o-')
+        % plot(little_rockets(i).x_pos,little_rockets(i).y_pos,'o-')
         %hold on
     end
-
     
     %Get landing points of small rocket
     land_points=createArray(2,number_of_small_rockets);

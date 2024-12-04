@@ -1,3 +1,4 @@
+
 classdef Rocket
     properties
         t_values 
@@ -10,9 +11,11 @@ classdef Rocket
         burn_time        {mustBeNumeric}
         air_resistance   {mustBeNumeric}
         force            {mustBeNumeric}
+        solver
     end
     methods
         function obj=Rocket(x_pos0,y_pos0,x_vel0,y_vel0,fuel_mass_g, body_mass_g,new_burn_time_s,new_air_resistance,new_force)
+            import Solvers.*;
             if nargin == 9
                 obj.x_pos = x_pos0;
                 obj.y_pos = y_pos0;
@@ -24,6 +27,7 @@ classdef Rocket
                 obj.air_resistance = new_air_resistance;
                 obj.force=new_force;
             end
+            obj.solver = Solvers(false);
         end
         function ret=solve_trajectory(obj,end_time)
             function ret=odefun(t,u)
@@ -115,7 +119,8 @@ classdef Rocket
             yy = [obj.y_pos(max_height_index-1:max_height_index+1)];
 
             %[p,~,mu]=polyfit(xx,yy,2);
-            p = polyfit(xx,yy,2);
+            % p = polyfit(xx,yy,2);
+            p = obj.solver.own_polyfit(xx,yy,2);
 
             %Plot the interpolation
             % xxx=linspace(60,70,100);
@@ -123,7 +128,8 @@ classdef Rocket
             % plot(xxx,polyval(p,xxx))
 
             x_max_height = -p(2)/(2*p(1));
-            y_max_height = polyval(p,x_max_height);
+            y_max_height = obj.solver.own_polyval(p,x_max_height);
+            % y_max_height = polyval(p,x_max_height);
 
             x = x_max_height;
             y = y_max_height;

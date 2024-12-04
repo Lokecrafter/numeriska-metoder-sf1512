@@ -3,8 +3,11 @@ classdef Solvers
         use_built_in
     end
     methods
+        function obj=Solvers(use_matlab_functions)
+            obj.use_built_in = use_matlab_functions;
+        end
 
-        function ret = own_ode45(odefun, x_span, y0, number_of_steps, tolerance)
+        function ret = own_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
             n = number_of_steps;
             num_equations = length(y0);
             prev_last_y = y0;
@@ -45,7 +48,7 @@ classdef Solvers
             ret.iterations = iteration;
         end
 
-        function ret = own_polyfit(x_coords, y_coords, grade)
+        function ret = own_polyfit(obj, x_coords, y_coords, grade)
             A = ones(length(x_coords), grade+1);
             for i = 1:length(x_coords)
                 A(i,1:end-1) = x_coords(i);
@@ -60,7 +63,7 @@ classdef Solvers
             ret = c';
         end
 
-        function ret = own_polyval(polynom, x_query)
+        function ret = own_polyval(obj, polynom, x_query)
             y_result = zeros(size(x_query));
             grade = length(polynom) - 1;
 
@@ -71,7 +74,7 @@ classdef Solvers
             ret = y_result;
         end
 
-        function ret = own_spline(x_coords, y_coords, x_query)
+        function ret = own_spline(obj, x_coords, y_coords, x_query)
             xh = zeros(1, length(x_coords)-1);
             yh = zeros(1, length(y_coords)-1);
             c =  zeros(1, length(y_coords)-1);
@@ -100,9 +103,9 @@ classdef Solvers
             b(1) = yh(1);
             b(end) = yh(end);
 
-            disp(xh)
-            disp(A)
-            disp(b)
+            % disp(xh)
+            % disp(A)
+            % disp(b)
 
             %K-values in Hermite's
             k = A\(3*b);
