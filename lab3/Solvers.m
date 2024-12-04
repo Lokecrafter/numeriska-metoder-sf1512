@@ -7,7 +7,7 @@ classdef Solvers
             obj.use_built_in = use_matlab_functions;
         end
 
-        function ret = own_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
+        function ret = solve_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
             n = number_of_steps;
             num_equations = length(y0);
             prev_last_y = y0;
@@ -20,10 +20,10 @@ classdef Solvers
 
                 %Do Runge-Kutta solve
                 for i = 1:n
-                    k1 = odefun(xx(i), yy(i));
-                    k2 = odefun(xx(i) + h * 0.5, yy(i) + h * k1 * 0.5);
-                    k3 = odefun(xx(i) + h * 0.5, yy(i) + h * k2 * 0.5);
-                    k4 = odefun(xx(i) + h,       yy(i) + h * k3      );
+                    k1 = odefun(xx(i), yy(:,i));
+                    k2 = odefun(xx(i) + h * 0.5, yy(:,i) + h * k1 * 0.5);
+                    k3 = odefun(xx(i) + h * 0.5, yy(:,i) + h * k2 * 0.5);
+                    k4 = odefun(xx(i) + h,       yy(:,i) + h * k3      );
 
                     K = (k1 + 2 * k2 + 2 * k3 + k4) / 6;
                     yy(:,i+1) = yy(:,i) + K*h;
@@ -48,7 +48,7 @@ classdef Solvers
             ret.iterations = iteration;
         end
 
-        function ret = own_polyfit(obj, x_coords, y_coords, grade)
+        function ret = solve_polyfit(obj, x_coords, y_coords, grade)
             A = ones(length(x_coords), grade+1);
             for i = 1:length(x_coords)
                 A(i,1:end-1) = x_coords(i);
@@ -63,7 +63,7 @@ classdef Solvers
             ret = c';
         end
 
-        function ret = own_polyval(obj, polynom, x_query)
+        function ret = solve_polyval(obj, polynom, x_query)
             y_result = zeros(size(x_query));
             grade = length(polynom) - 1;
 
@@ -74,7 +74,7 @@ classdef Solvers
             ret = y_result;
         end
 
-        function ret = own_spline(obj, x_coords, y_coords, x_query)
+        function ret = solve_spline(obj, x_coords, y_coords, x_query)
             xh = zeros(1, length(x_coords)-1);
             yh = zeros(1, length(y_coords)-1);
             c =  zeros(1, length(y_coords)-1);
@@ -132,7 +132,7 @@ end
 % % x_span = [0, 1];
 % % y0 = [0; 0];
 
-% % result = own_ode45(odefun, x_span, y0, 10, 1e-2);
+% % result = solve_ode45(odefun, x_span, y0, 10, 1e-2);
 % % plot(result.x, result.y);
 % % hold on
 % % disp("E_trunk: " + result.E_trunk + "   Iterations: " + result.iterations);
@@ -153,15 +153,15 @@ end
 % hold on
 % % plot(xx, polyval(p,xx), "o");
 
-% %p = own_polyfit(x_data, y_data, 2);
+% %p = solve_polyfit(x_data, y_data, 2);
 % %disp(p)
 
 % %hold on
 % %plot(xx, polyval(p,xx), "o");
 % %hold on
-% %plot(xx, own_polyval(p,xx), ":");
+% %plot(xx, solve_polyval(p,xx), ":");
 % hold on
-% yy = own_spline(x_data,y_data,xx);
+% yy = solve_spline(x_data,y_data,xx);
 % plot(xx,yy,':')
 % hold on
 % yy = spline(x_data,y_data,xx);

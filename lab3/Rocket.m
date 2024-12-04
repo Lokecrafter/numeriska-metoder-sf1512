@@ -29,7 +29,7 @@ classdef Rocket
             end
             obj.solver = Solvers(false);
         end
-        function ret=solve_trajectory(obj,end_time)
+        function ret=solve_trajectory(obj,end_time,tolerance)
             function ret=odefun(t,u)
                 ret=[0;0;0;0];
                 ret(1)=u(3);
@@ -56,7 +56,7 @@ classdef Rocket
             %solve interval for rocket burn time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[0,obj.burn_time];
-            result=ode45(@odefun,tspan,u_0);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance);
             
             obj.t_values=result.x;
             obj.x_pos=result.y(1,:);
@@ -68,7 +68,7 @@ classdef Rocket
             %solve interval for rocket burn time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time,obj.burn_time+2];
-            result=ode45(@odefun,tspan,u_0);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance);
             
             obj.t_values=[obj.t_values,result.x(2:end)];
             obj.x_pos=[obj.x_pos,result.y(1,2:end)];
@@ -80,7 +80,7 @@ classdef Rocket
             %solve interval for rocket burn time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time+2,end_time];
-            result=ode45(@odefun,tspan,u_0);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance);
             
             obj.t_values=[obj.t_values,result.x(2:end)];
             obj.x_pos=[obj.x_pos,result.y(1,2:end)];
