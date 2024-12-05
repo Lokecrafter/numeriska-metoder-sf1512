@@ -1,3 +1,7 @@
+Era resultat ska typiskt ha minst 6-8 säkra siffror, lite beroende
+på delfråga. -Ninni Carlsund Lab3 instruktion
+
+
 När vi delade upp raketbanans intervall i ett startintervall 0->0.5 sekunder 
 och sedan ett 0.5->burn_time sekunder så fick vi på startintervallet 
 ett E_trunk på 3.316273224876289e-07 Vi tog bort det sen

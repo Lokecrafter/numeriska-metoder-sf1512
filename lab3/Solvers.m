@@ -10,6 +10,18 @@ classdef Solvers
         end
 
         function ret = solve_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
+            if obj.use_built_in
+                options1 = odeset('RelTol',tolerance);
+                result1 = ode45(odefun, x_span, y0, options1);
+                options2 = odeset('RelTol',tolerance * 0.5);
+                result2 = ode45(odefun, x_span, y0, options2);
+
+                E_trunk = abs(result2.y(1, length(result2.y) - 1) - result1.y(1, length(result1.y) - 1));
+
+                ret = result2;
+                ret.E_trunk = E_trunk;
+                return;
+            end
             n = number_of_steps;
             num_equations = length(y0);
             prev_last_y = y0;
@@ -55,6 +67,11 @@ classdef Solvers
         end
 
         function ret = solve_polyfit(obj, x_coords, y_coords, grade)
+            if obj.use_built_in
+                ret = polyfit(x_coords, y_coords, grade);
+                return;
+            end
+
             A = ones(length(x_coords), grade+1);
             for i = 1:length(x_coords)
                 A(i,1:end-1) = x_coords(i);
@@ -70,6 +87,11 @@ classdef Solvers
         end
 
         function ret = solve_polyval(obj, polynom, x_query)
+            if obj.use_built_in
+                ret = polyval(polynom, x_query);
+                return;
+            end
+
             y_result = zeros(size(x_query));
             grade = length(polynom) - 1;
 
@@ -78,6 +100,33 @@ classdef Solvers
             end
 
             ret = y_result;
+        end
+
+        function ret = solve_interpolate(obj, x_coords, y_coords, x_query)
+            if obj.use_built_in
+                ret = interp1(x_coords, y_coords, x_query);
+                return;
+            end
+
+            yy = zeros(size(x_query));
+
+            for query_i = 1:length(x_query)
+                for i = 1:length(x_coords)
+                    if x_query(query_i) < x_coords(i) %Will automatically make i=length if none is found
+                        break
+                    end
+                end
+
+                x1 = x_coords(i - 1);
+                x2 = x_coords(i);
+                y1 = y_coords(i - 1);
+                y2 = y_coords(i);
+
+                %Linear interpolation
+                yy(query_i) = ((x_query(query_i) - x1) / (x2 - x1)) * (y2 - y1) + y1;
+            end
+
+            ret = yy;
         end
 
         function ret = solve_spline(obj, x_coords, y_coords, x_query)
@@ -131,48 +180,3 @@ classdef Solvers
         end
     end
 end
-
-
-% clear all; clc; close all;
-% % odefun = @(t, y) 0 * y + t;
-% % x_span = [0, 1];
-% % y0 = [0; 0];
-
-% % result = solve_ode45(odefun, x_span, y0, 10, 1e-2);
-% % plot(result.x, result.y);
-% % hold on
-% % disp("E_trunk: " + result.E_trunk + "   Iterations: " + result.iterations);
-
-% % result = ode45(odefun, x_span, y0);
-% % plot(result.x, result.y);
-
-
-% xx = linspace(-1, 6, 301);
-% x_data = [-1, 0, 1, 2, 3, 4, 5, 6];
-% y_data = [1, 2.5, 1, 3, 3, 4, 5, 6];
-% % x_data = [-1, 0, 1, 2];
-% % y_data = [1, 2.5, 1, 3];
-% plot(x_data, y_data, "o")
-
-% p = polyfit(x_data, y_data, 2);
-% disp(p)
-% hold on
-% % plot(xx, polyval(p,xx), "o");
-
-% %p = solve_polyfit(x_data, y_data, 2);
-% %disp(p)
-
-% %hold on
-% %plot(xx, polyval(p,xx), "o");
-% %hold on
-% %plot(xx, solve_polyval(p,xx), ":");
-% hold on
-% yy = solve_spline(x_data,y_data,xx);
-% plot(xx,yy,':')
-% hold on
-% yy = spline(x_data,y_data,xx);
-% plot(xx,yy,'-')
-% hold on
-% % yy = makima(x_data,y_data,xx);
-% % plot(xx,yy,'-')
-

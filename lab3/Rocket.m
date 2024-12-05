@@ -26,8 +26,8 @@ classdef Rocket
                 obj.burn_time = new_burn_time_s;
                 obj.air_resistance = new_air_resistance;
                 obj.force=new_force;
+                obj.solver = Solvers(false);
             end
-            obj.solver = Solvers(false);
         end
         function ret=solve_trajectory(obj,end_time,tolerance)
             function ret=odefun(t,u)
@@ -129,8 +129,8 @@ classdef Rocket
                 prev_index=i;
             end
             %calculates when the rocket crosses the x-axis
-            pt1=[obj.x_pos(prev_index);obj.y_pos(prev_index)];
-            pt2=[obj.x_pos(prev_index+1);obj.y_pos(prev_index+1)];
+            pt1=[obj.x_pos(prev_index-1);obj.y_pos(prev_index-1)];
+            pt2=[obj.x_pos(prev_index);obj.y_pos(prev_index)];
             direction=pt2-pt1;
             
             land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; 
