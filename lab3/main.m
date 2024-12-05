@@ -46,7 +46,7 @@ disp("Large rocket global trajectory E_trunk: " + sprintf('%0.10f', rocket1.get_
 %Find and plot the max height point of large rocket
 rocket1_max_height = rocket1.get_highest_point(); %SVAR på uppgift a
 hold on;    plot(rocket1_max_height.point(1), rocket1_max_height.point(2), "o",'MarkerSize',10);
-disp("Large rocket max height.   x: " + sprintf('%0.6f', rocket1_max_height.point(1)) + "   y: " + sprintf('%0.6f', rocket1_max_height.point(2)) + "   E_trunk: " + sprintf('%0.10f', rocket1_max_height.E_trunk) + "   Global E_trunk: " + sprintf('%0.10f', rocket1_max_height.glob_E_trunk))
+disp("Large rocket max height.      x: " + sprintf('%0.6f', rocket1_max_height.point(1)) + "   y: " + sprintf('%0.6f', rocket1_max_height.point(2)) + "   E_trunk: " + sprintf('%0.10f', rocket1_max_height.E_trunk) + "   Global E_trunk: " + sprintf('%0.10f', rocket1_max_height.glob_E_trunk))
 
 %Find and plot landing point of large rocket
 land_point = rocket1.get_land_point();
@@ -173,7 +173,7 @@ for iteration =1:5
     time_to_fire = -p(2)/(2*p(1));
 
     E_trunk = abs(time_to_fire - prev_time_to_fire);
-    disp("Time to fire small rocket: " + sprintf('%.10f', time_to_fire) + "   E_trunk: " + sprintf('%.10f', E_trunk) + "      (Distance reached: " + sprintf('%.10f', own_solver.solve_polyval(p, time_to_fire)) + ")");
+    disp("Time to fire: " + sprintf('%.10f', time_to_fire) + "   trajectory E_trunk: " + sprintf('%.10f', little_rockets(best_times.indexes(1)).get_trajectory_E_trunk()) + "   E_trunk: " + sprintf('%.10f', E_trunk) + "   global E_trunk: " + sprintf('%.10f', little_rockets(best_times.indexes(1)).get_trajectory_E_trunk() + E_trunk) + "      (Distance reached: " + sprintf('%.10f', own_solver.solve_polyval(p, time_to_fire)) + ")");
 
     prev_time_to_fire = time_to_fire;
 

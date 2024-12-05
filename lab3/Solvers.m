@@ -11,11 +11,12 @@ classdef Solvers
 
         function ret = solve_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
             if obj.use_built_in
-                options1 = odeset('RelTol',tolerance);
+                options1 = odeset('AbsTol',tolerance);
                 result1 = ode45(odefun, x_span, y0, options1);
-                options2 = odeset('RelTol',tolerance * 0.5);
+                options2 = odeset('AbsTol',tolerance * 0.1);
                 result2 = ode45(odefun, x_span, y0, options2);
-
+                
+                %Calculated with two different tolerances that ensure that matlab used different step sizes for each ode45
                 E_trunk = abs(result2.y(1, length(result2.y) - 1) - result1.y(1, length(result1.y) - 1));
 
                 ret = result2;
@@ -129,6 +130,7 @@ classdef Solvers
             ret = yy;
         end
 
+    %{
         function ret = solve_spline(obj, x_coords, y_coords, x_query)
             xh = zeros(1, length(x_coords)-1);
             yh = zeros(1, length(y_coords)-1);
@@ -178,5 +180,7 @@ classdef Solvers
             end
             ret = y_query;
         end
+    %}
+
     end
 end
