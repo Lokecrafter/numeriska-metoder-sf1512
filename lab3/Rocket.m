@@ -12,6 +12,7 @@ classdef Rocket
         air_resistance   {mustBeNumeric}
         force            {mustBeNumeric}
         solver
+        E_trunk_trajectory {mustBeNumeric}
     end
     methods
         function obj=Rocket(x_pos0,y_pos0,x_vel0,y_vel0,fuel_mass_g, body_mass_g,new_burn_time_s,new_air_resistance,new_force)
@@ -26,7 +27,7 @@ classdef Rocket
                 obj.burn_time = new_burn_time_s;
                 obj.air_resistance = new_air_resistance;
                 obj.force=new_force;
-                obj.solver = Solvers(false);
+                obj.solver = Solvers(true);
             end
         end
         function ret=solve_trajectory(obj,end_time,tolerance)
@@ -52,69 +53,47 @@ classdef Rocket
                 ret(3)=ret(3)/mass;
                 ret(4)=ret(4)/mass;
             end
-            
-            %solve interval for rocket burn time start
-            % u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
-            % tspan=[0,0.5];
-            % result=obj.solver.solve_ode45(@odefun,tspan,u_0,50,tolerance);
-            
-            % obj.t_values=result.x;
-            % obj.x_pos=result.y(1,:);
-            % obj.y_pos=result.y(2,:);
-            % obj.x_vel=result.y(3,:);
-            % obj.y_vel=result.y(4,:);
-            % disp("E_trunk before part: ");
-            % disp(result.E_trunk);
-            
+                 
+            obj.E_trunk_trajectory = 0;
+
             %solve interval for rocket burn time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[0,obj.burn_time];
-            result=obj.solver.solve_ode45(@odefun,tspan,u_0,50,tolerance);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,50,tolerance/3);
             
             obj.t_values=result.x;
             obj.x_pos=result.y(1,:);
             obj.y_pos=result.y(2,:);
             obj.x_vel=result.y(3,:);
             obj.y_vel=result.y(4,:);
-            % obj.t_values=[obj.t_values,result.x(2:end)];
-            % obj.x_pos=[obj.x_pos,result.y(1,2:end)];
-            % obj.y_pos=[obj.y_pos,result.y(2,2:end)];
-            % obj.x_vel=[obj.x_vel,result.y(3,2:end)];
-            % obj.y_vel=[obj.y_vel,result.y(4,2:end)];
-            disp("E_trunk first part: ");
-            disp(result.E_trunk);
-
+            obj.E_trunk_trajectory = obj.E_trunk_trajectory + result.E_trunk;
+            
             
             %solve interval for rocket slowing time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time,obj.burn_time+2];
-            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance/3);
             
             obj.t_values=[obj.t_values,result.x(2:end)];
             obj.x_pos=[obj.x_pos,result.y(1,2:end)];
             obj.y_pos=[obj.y_pos,result.y(2,2:end)];
             obj.x_vel=[obj.x_vel,result.y(3,2:end)];
             obj.y_vel=[obj.y_vel,result.y(4,2:end)];
-            disp("E_trunk second part: ");
-            disp(result.E_trunk);
+            obj.E_trunk_trajectory = obj.E_trunk_trajectory + result.E_trunk;
+
             
             
             %solve interval for rocket falling time
             u_0=[obj.x_pos(end);obj.y_pos(end);obj.x_vel(end);obj.y_vel(end)];
             tspan=[obj.burn_time+2,end_time];
-            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance);
+            result=obj.solver.solve_ode45(@odefun,tspan,u_0,10,tolerance/3);
             
             obj.t_values=[obj.t_values,result.x(2:end)];
             obj.x_pos=[obj.x_pos,result.y(1,2:end)];
             obj.y_pos=[obj.y_pos,result.y(2,2:end)];
             obj.x_vel=[obj.x_vel,result.y(3,2:end)];
             obj.y_vel=[obj.y_vel,result.y(4,2:end)];
-            disp("E_trunk third part: ");
-            disp(result.E_trunk);
-            
-            
-            
-            
+            obj.E_trunk_trajectory = obj.E_trunk_trajectory + result.E_trunk;
             
             ret=obj;
         end
@@ -134,30 +113,36 @@ classdef Rocket
             direction=pt2-pt1;
             
             land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; 
-            ret=land_point;
+            E_trunk = max(abs(land_point(1) - pt1(1)), abs(land_point(1) - pt2(1)));
+
+            ret.point=land_point;
+            ret.E_trunk = E_trunk;
+            ret.glob_E_trunk = E_trunk + obj.E_trunk_trajectory;
         end
-        function [x,y,index]=get_highest_point(obj)
+        function ret=get_highest_point(obj)
             [~,max_height_index]=max(obj.y_pos);
 
             xx = [obj.x_pos(max_height_index-1:max_height_index+1)];
             yy = [obj.y_pos(max_height_index-1:max_height_index+1)];
 
-            %[p,~,mu]=polyfit(xx,yy,2);
-            % p = polyfit(xx,yy,2);
             p = obj.solver.solve_polyfit(xx,yy,2);
 
-            %Plot the interpolation
-            % xxx=linspace(60,70,100);
-            % hold on
-            % plot(xxx,polyval(p,xxx))
 
             x_max_height = -p(2)/(2*p(1));
             y_max_height = obj.solver.solve_polyval(p,x_max_height);
-            % y_max_height = polyval(p,x_max_height);
 
             x = x_max_height;
             y = y_max_height;
             index = max_height_index;
+            E_trunk = norm([x_max_height; y_max_height] - [obj.x_pos(max_height_index); obj.y_pos(max_height_index)]);
+
+            ret.point = [x,y];
+            ret.index = index;
+            ret.E_trunk = E_trunk;
+            ret.glob_E_trunk = E_trunk + obj.E_trunk_trajectory;
+        end
+        function ret=get_trajectory_E_trunk(obj)
+            ret = obj.E_trunk_trajectory;
         end
     end
 end

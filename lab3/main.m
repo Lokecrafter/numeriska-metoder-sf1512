@@ -3,8 +3,8 @@ import Rocket.*;
 import Solvers.*;
 
 %Inputs
-use_matlab_functions_for_solvers = false;
-tolerance = 0.1;
+use_matlab_functions_for_solvers = true;
+tolerance = 0.01;
 
 rocket1_mass = 20;
 rocket1_fuel = 45;
@@ -29,7 +29,9 @@ own_solver = Solvers(use_matlab_functions_for_solvers);
 
 %Main program
 f1=figure;
+disp("Program start" + newline);
 
+disp("Calculating max height and landing point for large rocket...");
 %Initialize big rocket
 angle = deg2rad(80);
 start_vel = 20 * [cos(angle), sin(angle)];
@@ -39,38 +41,40 @@ rocket1=Rocket(0,0,start_vel(1),start_vel(2),rocket1_fuel,rocket1_mass,rocket1_b
 rocket1=rocket1.solve_trajectory(rocket1_trajectory_end_time,tolerance);
 hold on;    plot(rocket1.x_pos,rocket1.y_pos,'-*')
 hold on;    plot([0,32],[0,0])
+disp("Large rocket global trajectory E_trunk: " + sprintf('%0.10f', rocket1.get_trajectory_E_trunk()));
 
 %Find and plot the max height point of large rocket
-[max_height_x, max_height_y, max_height_index] = rocket1.get_highest_point(); %SVAR på uppgift a
-hold on;    plot(max_height_x, max_height_y, "o",'MarkerSize',10);
-disp('max height of large rocket:')
-disp(max_height_y)
+rocket1_max_height = rocket1.get_highest_point(); %SVAR på uppgift a
+hold on;    plot(rocket1_max_height.point(1), rocket1_max_height.point(2), "o",'MarkerSize',10);
+disp("Large rocket max height.   x: " + sprintf('%0.6f', rocket1_max_height.point(1)) + "   y: " + sprintf('%0.6f', rocket1_max_height.point(2)) + "   E_trunk: " + sprintf('%0.10f', rocket1_max_height.E_trunk) + "   Global E_trunk: " + sprintf('%0.10f', rocket1_max_height.glob_E_trunk))
 
 %Find and plot landing point of large rocket
-land_point = rocket1.get_land_point;
-hold on;    plot(land_point(1),land_point(2),'o','MarkerSize',10)
-disp('landingpoint:')
-disp(land_point)
+land_point = rocket1.get_land_point();
+hold on;    plot(land_point.point(1),land_point.point(2),'o','MarkerSize',10)
+disp("Large rocket landing point.   x: " + sprintf('%0.6f', land_point.point(1)) + "   y: " + sprintf('%0.6f', land_point.point(2))+ "   E_trunk: " + sprintf('%0.10f', land_point.E_trunk) + "   Global E_trunk: " + sprintf('%0.10f', land_point.glob_E_trunk))
 
 %Make plots pretty
 title("Large rocket trajectory");
 xlabel("x position");
 ylabel("y position");
-legend(["Trajectory", "Ground", "Max height.   x: " + max_height_x + ",   y:" + max_height_y, "Land point.   x: " + land_point(1) + ",   y:" + land_point(2)], 'Location', 'northwest');
+legend(["Trajectory", "Ground", "Max height.   x: " + rocket1_max_height.point(1) + ",   y:" + rocket1_max_height.point(2), "Land point.   x: " + land_point.point(1) + ",   y:" + land_point.point(2)], 'Location', 'northwest');
 
 
 function ret=find_three_best_candidates(t_values,x_values)
     [~,index1]=max(x_values);
     if index1 + 1 > length(t_values)
-        ret=[t_values(index1 - 1),t_values(index1-1),t_values(index1)];
+        ret.t_values=[t_values(index1 - 2),t_values(index1-1),t_values(index1)];
+        ret.indexes = [index1-2, index1-1, index1];
         return;
     else if index1 - 1 < 1
-        ret=[t_values(index1),t_values(index1+1),t_values(index1+2)];
+        ret.t_values=[t_values(index1),t_values(index1+1),t_values(index1+2)];
+        ret.indexes = [index1, index1+1, index1+2];
         return;
         end
     end
     
-    ret=[t_values(index1),t_values(index1-1),t_values(index1 +1)];
+    ret.t_values = [t_values(index1),t_values(index1-1),t_values(index1+1)];
+    ret.indexes = [index1, index1-1, index1+1];
 end
 %{
     %Plot big rocket solutions against time
@@ -121,9 +125,13 @@ f2=figure;
 
 %Solve small rocket best launch time.
 little_rockets= createArray(1,number_of_small_rockets,"Rocket");
-t_interval=[0,rocket1.t_values(max_height_index+1)];
+land_points=zeros(2,number_of_small_rockets);
+t_interval=[0,rocket1.t_values(rocket1_max_height.index+1)];
+prev_time_to_fire = 0;
 
-for iteration =1:4
+disp(newline)
+disp("Calculating when to fire small rocket...")
+for iteration =1:5
     %Interpolate start conditions for small rocket.
     small_rocket_start_times=linspace(t_interval(1),t_interval(2),number_of_small_rockets);
 
@@ -149,37 +157,35 @@ for iteration =1:4
         start_x_vel=little_rocket_x_vel(i);
         start_y_vel=little_rocket_y_vel(i);
 
+        %Solve trajectory and get landing points of small rockets
         little_rockets(i)=Rocket(start_x_pos,start_y_pos,start_x_vel,start_y_vel,rocket2_fuel,rocket2_mass,rocket2_burn_time,rocket2_air_resistance,rocket2_burn_force).solve_trajectory(rocket2_trajectory_end_time, tolerance);
-        % hold on;    plot(little_rockets(i).x_pos,little_rockets(i).y_pos,'o-')
+        land_points(:,i)=little_rockets(i).get_land_point().point;
     end
     
-    %Get landing points of small rockets
-    land_points=zeros(2,number_of_small_rockets);
-    for i = 1:number_of_small_rockets
-        disp(i)
-        land_points(:,i)=little_rockets(i).get_land_point();
-    end
+    %Find smaller interval to launch rockets
+    best_times=find_three_best_candidates(small_rocket_start_times,land_points(1,:));
+    t_interval(1)=min(best_times.t_values);
+    t_interval(2)=max(best_times.t_values);
+
+    %Finsh by fitting a second degree polynom and solving for the optimal launch time
+    max_x_distance_small_rocket_polynom = own_solver.solve_polyfit(best_times.t_values,land_points(1,best_times.indexes),2);
+    p = max_x_distance_small_rocket_polynom;
+    time_to_fire = -p(2)/(2*p(1));
+
+    E_trunk = abs(time_to_fire - prev_time_to_fire);
+    disp("Time to fire small rocket: " + sprintf('%.10f', time_to_fire) + "   E_trunk: " + sprintf('%.10f', E_trunk) + "      (Distance reached: " + sprintf('%.10f', own_solver.solve_polyval(p, time_to_fire)) + ")");
+
+    prev_time_to_fire = time_to_fire;
 
     %Plot landing points of small rockets against launch time
     hold on;    plot(small_rocket_start_times,land_points(1,:),'-o')
-
-    %Find smaller interval to launch rockets
-    best_times=find_three_best_candidates(small_rocket_start_times,land_points(1,:));
-    t_interval(1)=min(best_times);
-    t_interval(2)=max(best_times);
+    %Plot fitted polynom
+    tt=linspace(3, 4, 1000);
+    hold on;    plot(tt, own_solver.solve_polyval(max_x_distance_small_rocket_polynom, tt), "-.");
+    hold on;    plot([time_to_fire, time_to_fire], [-200, 300], "-")
 end
 
-%Finsh by fitting a second degree polynom and solving for the optimal launch time
-[~, max_x_distance_index] = max(land_points(1,:));
-max_x_distance_small_rocket_polynom = polyfit(small_rocket_start_times(max_x_distance_index-1:max_x_distance_index+1),land_points(1,max_x_distance_index-1:max_x_distance_index+1),2);
-p = max_x_distance_small_rocket_polynom;
-time_to_fire_small_rocket = -p(2)/(2*p(1));
-disp("Time to fire small rocket: " + time_to_fire_small_rocket);
 
-%Plot fitted polynom
-tt=linspace(3, 4, 1000);
-hold on;    plot(tt, polyval(max_x_distance_small_rocket_polynom, tt), "-.");
-hold on;    plot([time_to_fire_small_rocket, time_to_fire_small_rocket], [-200, 300], "-")
 
 %Make plots pretty
 title("Distance reached against small rocket start time");
@@ -194,7 +200,8 @@ ylim([-20, 400]);
 
 %Plot trajectory for optimal small rocket launch time
 f3=figure;
-pbaspect([1 1 1]);                                                                                      
+pbaspect([1 1 1]);
+max_x_distance_index = best_times.indexes(1);                                                                                      
 hold on;    plot(little_rockets(max_x_distance_index).x_pos,little_rockets(max_x_distance_index).y_pos,'*-');       
 hold on;    plot([0,300], [0,0]);                                                                                   
 hold on;    plot(land_points(1,max_x_distance_index), land_points(2,max_x_distance_index), "o",'MarkerSize',10);     
