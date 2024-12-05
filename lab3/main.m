@@ -3,7 +3,7 @@ import Rocket.*;
 import Solvers.*;
 
 use_matlab_functions_for_solvers = false;
-tolerance = 1e-4;
+tolerance = 0.1;
 
 own_solver = Solvers(use_matlab_functions_for_solvers);
 % xx = linspace(-1, 6, 301);
@@ -76,6 +76,15 @@ function ret=find_three_best_candidates(t_values,x_values)
     % [~,index3]=max(x_values);
     % x_values(index3)=0;
     %ret=[t_values(index1),t_values(index2),t_values(index3)];
+    if index1 + 1 > length(t_values)
+        ret=[t_values(index1 - 1),t_values(index1-1),t_values(index1)];
+        return;
+    else if index1 - 1 < 1
+        ret=[t_values(index1),t_values(index1+1),t_values(index1+2)];
+        return;
+        end
+    end
+    
     ret=[t_values(index1),t_values(index1-1),t_values(index1 +1)];
 end
 

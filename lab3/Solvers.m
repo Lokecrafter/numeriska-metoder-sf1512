@@ -4,15 +4,18 @@ classdef Solvers
     end
     methods
         function obj=Solvers(use_matlab_functions)
-            obj.use_built_in = use_matlab_functions;
+            if nargin == 1
+                obj.use_built_in = use_matlab_functions;
+            end
         end
 
         function ret = solve_ode45(obj, odefun, x_span, y0, number_of_steps, tolerance)
             n = number_of_steps;
             num_equations = length(y0);
             prev_last_y = y0;
+            last_E_trunk = 0;
 
-            for iteration = 1:20
+            for iteration = 1:7
                 h = (x_span(2) - x_span(1)) / n;
                 xx = x_span(1):h:x_span(2);
                 yy = zeros(num_equations, length(xx));
@@ -32,6 +35,8 @@ classdef Solvers
                 y_diff = yy(:,end) - prev_last_y;
                 E_trunk = norm(y_diff);
 
+                disp("E_trunk: " + E_trunk + "   Last E_trunk: " + last_E_trunk + "    K: " + (last_E_trunk / (E_trunk.^4)));
+
                 %Exit condition
                 if iteration >= 2
                     if E_trunk < tolerance
@@ -40,6 +45,7 @@ classdef Solvers
                 end
 
                 prev_last_y = yy(:,end);
+                last_E_trunk = E_trunk;
                 n = n * 2;
             end
             ret.x = xx;
