@@ -134,7 +134,7 @@ classdef Rocket
             x = x_max_height;
             y = y_max_height;
             index = max_height_index;
-            E_trunk = norm([x_max_height; y_max_height] - [obj.x_pos(max_height_index); obj.y_pos(max_height_index)]);
+            E_trunk = abs(y_max_height - obj.y_pos(max_height_index));
 
             ret.point = [x,y];
             ret.index = index;
