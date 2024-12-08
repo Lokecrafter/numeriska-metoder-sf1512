@@ -112,7 +112,7 @@ classdef Rocket
             pt2=[obj.x_pos(prev_index);obj.y_pos(prev_index)];
             direction=pt2-pt1;
             
-            land_point=pt1-pt1(2).*[direction(1)/direction(2);1]; 
+            land_point=pt1 - pt1(2) .* [direction(1)/direction(2); 1]; 
             E_trunk = max(abs(land_point(1) - pt1(1)), abs(land_point(1) - pt2(1)));
 
             ret.point=land_point;
