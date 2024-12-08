@@ -29,6 +29,7 @@ own_solver = Solvers(use_matlab_functions_for_solvers);
 
 %Main program
 f1=figure;
+
 disp("Program start" + newline);
 
 disp("Calculating max height and landing point for large rocket...");
@@ -53,11 +54,14 @@ land_point = rocket1.get_land_point();
 hold on;    plot(land_point.point(1),land_point.point(2),'o','MarkerSize',10)
 disp("Large rocket landing point.   x: " + sprintf('%0.6f', land_point.point(1)) + "   y: " + sprintf('%0.6f', land_point.point(2))+ "   E_trunk: " + sprintf('%0.10f', land_point.E_trunk) + "   Global E_trunk: " + sprintf('%0.10f', land_point.glob_E_trunk))
 
+
 %Make plots pretty
 title("Large rocket trajectory");
 xlabel("x position");
 ylabel("y position");
+
 legend(["Trajectory", "Ground", "Max height.   x: " + rocket1_max_height.point(1) + ",   y:" + rocket1_max_height.point(2), "Land point.   x: " + land_point.point(1) + ",   y:" + land_point.point(2)], 'Location', 'northwest');
+
 
 
 function ret=find_three_best_candidates(t_values,x_values)
@@ -196,8 +200,6 @@ ylim([-20, 400]);
 
 
 
-
-
 %Plot trajectory for optimal small rocket launch time
 f3=figure;
 pbaspect([1 1 1]);
@@ -208,8 +210,11 @@ hold on;    plot(land_points(1,max_x_distance_index), land_points(2,max_x_distan
 hold on;    plot(rocket1.x_pos, rocket1.y_pos, ":")
 
 
+
 %Make plots pretty
 title("Small rocket trajectory");
 xlabel("x position");
 ylabel("y position");
+
 legend(["Small rocket trajectory", "Ground", "Land point.   x: " + land_points(1,max_x_distance_index) + ",   y:" + land_points(2,max_x_distance_index), "Large rocket trajectory"], 'Location', 'southwest');
+
