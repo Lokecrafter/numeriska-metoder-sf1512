@@ -1,0 +1,102 @@
+Era resultat ska typiskt ha minst 6-8 säkra siffror, lite beroende
+på delfråga. -Ninni Carlsund Lab3 instruktion
+
+
+När vi delade upp raketbanans intervall i ett startintervall 0->0.5 sekunder 
+och sedan ett 0.5->burn_time sekunder så fick vi på startintervallet 
+ett E_trunk på 3.316273224876289e-07 Vi tog bort det sen
+
+
+
+E_trunk before part: 
+     3.316273224876289e-07
+
+
+E_trunk first part: 
+   0.260416676166870
+
+
+E_trunk second part: 
+   0.032557676693652
+
+
+E_trunk third part: 
+   0.010154710927082
+
+
+max height of large rocket:
+  90.773740658280985
+
+
+landingpoint:
+  30.013345199719236
+                   0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E_trunk: 76.8317   Last E_trunk: 0    K: 0
+E_trunk: 2.0834   Last E_trunk: 76.8317    K: 4.0781
+E_trunk: 1.0417   Last E_trunk: 2.0834    K: 1.7695
+E_trunk: 0.52083   Last E_trunk: 1.0417    K: 14.1558
+E_trunk: 0.26042   Last E_trunk: 0.52083    K: 113.2462
+E_trunk: 0.13021   Last E_trunk: 0.26042    K: 905.9697
+E_trunk: 0.065104   Last E_trunk: 0.13021    K: 7247.7573
+E_trunk first part: 
+   0.065104166692524
+
+
+    <missing>
+    <missing>
+    <missing>
+E_trunk: 0.033716   Last E_trunk: 1.1266    K: 871804.8622
+E_trunk second part: 
+   0.033715815660700
+
+
+    <missing>
+    <missing>
+    <missing>
+    <missing>
+E_trunk third part: 
+   0.010373401191278
+
+
+max height of large rocket:
+  77.079386792783339
+
+
+landingpoint:
+  23.285705686875801
+                   0
+
+
+
+
+Samma sak med en before second part. E_trunk på 1e-11
