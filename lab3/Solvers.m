@@ -129,58 +129,5 @@ classdef Solvers
 
             ret = yy;
         end
-
-    %{
-        function ret = solve_spline(obj, x_coords, y_coords, x_query)
-            xh = zeros(1, length(x_coords)-1);
-            yh = zeros(1, length(y_coords)-1);
-            c =  zeros(1, length(y_coords)-1);
-
-            %Calc constants 
-            for i = 1:length(xh)
-                xh(i) = x_coords(i+1) - x_coords(i);
-                yh(i) = y_coords(i+1) - y_coords(i);
-                c(i) = yh(i) / xh(i);
-            end
-
-            %Construct splines matrix and vector
-            A = zeros(length(x_coords));
-            b = zeros(length(x_coords),1);
-            for row = 2:length(x_coords)-1
-                A(row,row-1) = xh(row);
-                A(row,row) = 2 * (xh(row) + xh(row-1));
-                A(row,row+1) = xh(row-1);
-                b(row) = yh(i) * xh(i-1)/xh(i) + yh(i-1) * xh(i)/xh(i-1);
-            end
-
-            A(1,1) = 2*xh(1);
-            A(1,2) = xh(1);
-            A(end,end) = 2*xh(end);
-            A(end,end-1) = xh(end);
-            b(1) = yh(1);
-            b(end) = yh(end);
-
-            % disp(xh)
-            % disp(A)
-            % disp(b)
-
-            %K-values in Hermite's
-            k = A\(3*b);
-
-            y_query = zeros(size(x_query));
-            for j = 1:length(x_query)
-                x = x_query(j);
-                for i = 1:length(x_coords)-1
-                    is_inside_interval = discretize(x, [x_coords(i),x_coords(i+1)])==1;
-                    if is_inside_interval 
-                        break
-                    end
-                end
-                y_query(j) = y_coords(i) + c(i)*(x-x_coords(i)) + (x-x_coords(i)) * (x-x_coords(i+1)) * ((k(i+1) - c(i)) * (x - x_coords(i)) + (k(i) - c(i)) * (x - x_coords(i+1))) / (xh(i)*xh(i));
-            end
-            ret = y_query;
-        end
-    %}
-
     end
 end
