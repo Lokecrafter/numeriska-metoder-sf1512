@@ -27,7 +27,7 @@ classdef Rocket
                 obj.burn_time = new_burn_time_s;
                 obj.air_resistance = new_air_resistance;
                 obj.force=new_force;
-                obj.solver = Solvers(true);
+                obj.solver = Solvers(false);
             end
         end
         function ret=solve_trajectory(obj,end_time,tolerance)

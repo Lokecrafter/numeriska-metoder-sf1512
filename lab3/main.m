@@ -3,8 +3,9 @@ import Rocket.*;
 import Solvers.*;
 
 %Inputs
-use_matlab_functions_for_solvers = true;
+use_matlab_functions_for_solvers = false;
 tolerance = 0.01;
+
 
 rocket1_mass = 20;
 rocket1_fuel = 45;
@@ -23,8 +24,6 @@ number_of_small_rockets=20; %Used for calculating best launch point
 
 %Numerical methods
 own_solver = Solvers(use_matlab_functions_for_solvers);
-
-
 
 
 %Main program

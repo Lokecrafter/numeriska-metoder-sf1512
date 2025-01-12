@@ -48,7 +48,7 @@ classdef Solvers
                 y_diff = yy(:,end) - prev_last_y;
                 E_trunk = norm(y_diff);
 
-                %disp("E_trunk: " + E_trunk + "   Last E_trunk: " + last_E_trunk + "    K: " + (last_E_trunk / (E_trunk.^4)));
+                 disp("E_trunk: " + E_trunk + "   Last E_trunk: " + last_E_trunk + "    K: " + (last_E_trunk / (E_trunk)));
 
                 %Exit condition
                 if iteration >= 2
